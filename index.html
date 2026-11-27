@@ -85,6 +85,7 @@ h1{font-size:44px;line-height:1.1;margin:0 0 14px;font-weight:800;letter-spacing
 .paper .kw{font-size:14px;font-style:italic;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .paper hr{border:0;border-top:1.5px solid currentColor;margin:20px 0 14px;opacity:.85}
 .paper .line{font-size:14.5px;line-height:2}
+.paper a{color:inherit;text-underline-offset:3px;word-break:break-all}
 .paper .k{font:inherit;font-weight:700;background:none;border:0;padding:0;color:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:4px}
 .paper .mini{font-family:var(--font);font-style:normal}
 .linkbtn{font:inherit;font-weight:700;color:var(--o3);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
@@ -170,22 +171,22 @@ const GAS_KEY = '';                     // Code.gs 有設定 KEY 才需要
 const LOG_SEARCH = true;                // 不想記錄搜尋關鍵字就改成 false
 
 const MODES = {
-  tags:    { nav:'Account Tag',    short:'模式一 TAG',     title:'帳號 TAG 辭典',      desc:'帳號上的 TAG 查詢涵義工具', ph:'請輸入單個完整的TAG', add:'新增 TAG', what:'TAG' },
+  tags:    { nav:'Account Tag',    short:'模式一 TAG',     title:'帳號 TAG 辭典',      desc:'帳號上的 TAG 查詢涵義工具', ph:'輸入 TAG，打開頭幾個字就會出現（例如 f）', add:'新增 TAG', what:'TAG' },
   events:  { nav:'Mixpanel Event', short:'模式二 Mixpanel', title:'Mixpanel Event 速查', desc:'輸入想查的內容，系統將為你找到適合查看的 Event Name。', ph:'例如：點擊、button、v2.user.clicked', add:'新增 Event', what:'Event' },
   threads: { nav:'Threads',        short:'模式三 討論串',   title:'討論串捷徑',          desc:'快速查找討論串，並知道要 @ 哪位負責人', ph:'輸入主題或關鍵字，例如 VIP、廣告', add:'新增討論串', what:'討論串' }
 };
 /* 表單欄位：[key, 標籤, 類型, 範例] */
 const F = {
   tags: [['tag','Tag Name（多個以逗號分隔）','text','fpid_phone_abuse, referral_abuse_5000'],['translation','Translation 涵義','text','套利，利用活動規則漏洞不當取得獎勵'],['related','Related 回覆話術（選填）','area','']],
-  evnew: [['event','Event Name','text','v2.user.clicked'],['info','Description 說明','text','查用戶在時間段內點了什麼'],['keywords','關鍵字（逗號分隔）','text','點, 點擊, 操作, click']],
+  evnew: [['event','Event Name','text','v2.user.clicked'],['info','Description 說明','text','查用戶在時間段內點了什麼'],['keywords','關鍵字（逗號分隔）','text','點, 點擊, 操作, click'],['category','Category 分類','text','帳號'],['note','Note 備註（選填）','area','適用用戶與主播']],
   evsub: [['sub','欄位名稱','text','button.id'],['info','說明','text','使用者點擊的按鈕']],
-  evfull: [['event','Event Name','text',''],['sub','欄位名稱（空白 = Event 本身）','text',''],['info','說明','text',''],['keywords','關鍵字（逗號分隔）','text','']],
+  evfull: [['event','Event Name','text',''],['sub','欄位名稱（空白 = Event 本身）','text',''],['info','說明','text',''],['keywords','關鍵字（逗號分隔）','text',''],['category','Category 分類','text',''],['note','Note 備註','area','']],
   kw: [['keywords','新增關鍵字（可多個，以逗號分隔）','text','例如：點擊, 操作']],
   threads: [['title','標題','text','VIP 尊榮預約系統'],['platform','來源','select:slack,notion',''],['url','連結網址','text','https://swaglive.slack.com/…'],['mention','來自哪位同仁','text','@Ashley'],['keywords','關鍵字（逗號分隔）','text','廣告, 商務, MKT'],['note','內文','area','貼上討論串的內文']]
 };
 const SEED = {
   tags:[{id:'s1',tag:'fingerprint-pro:failed, suspicious',translation:'裝置FPID重複，不得享有新手優惠、導購優惠',related:'您好，經查詢，您的帳號由於不符合購買該優惠禮包的條件，請選擇購買其他禮包，其餘使用不受影響。\n此限制並非代表您已進行違規儲值，而是系統在帳號評估過程中，基於風險控管機制，對部分帳號先行關閉儲值功能以避免後續風險。\n\n相關判斷屬於平台風控機制的一環，判斷條件與細節無法對外說明，客服端亦無法人工調整，敬請見諒。'}],
-  events:[{id:'e0',event:'v2.user.clicked',sub:'',info:'查用戶在時間段內點了什麼',keywords:'點, 點擊, 操作, click'},
+  events:[{id:'e0',event:'v2.user.clicked',sub:'',info:'查用戶在時間段內點了什麼',keywords:'點, 點擊, 操作, click',category:'',note:''},
           {id:'e1',event:'v2.user.clicked',sub:'button.id',info:'使用者點擊的按鈕',keywords:''},
           {id:'e2',event:'v2.user.clicked',sub:'Browser',info:'使用者使用的瀏覽器，如 Chrome iOS 等',keywords:''},
           {id:'e3',event:'v2.user.clicked',sub:'Device',info:'使用者使用的裝置，如 iPhone / Android 等',keywords:''},
@@ -252,14 +253,47 @@ const logS = (m, act, detail) => act && logRaw([MODES[m].short, act, detail].fil
 const logAct = (act, detail) => logS(mode, act, detail);
 
 /* ---------- 搜尋 ---------- */
-const hay = o => Object.values(o).join(' ').toLowerCase();
-const match = (row, q) => q.toLowerCase().split(/\s+/).filter(Boolean).every(t => hay(row).includes(t));
+/* 模糊搜尋：每個關鍵字依序比對 0 開頭相符 → 1 包含 → 2 字母依序出現（縮寫，如 fpd）→ 3 容許打錯 1–2 字（4 字以上）。
+   多個關鍵字（以空白分隔）需全部符合；欄位可加權重（offset 越小越優先）。 */
+const SEP = /[\s,，、.:_\-\/|｜@()（）\[\]]+/;
+function lev(a, b){
+  const d = Array.from({length:a.length+1}, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for(let j=1;j<=b.length;j++) d[0][j] = j;
+  for(let i=1;i<=a.length;i++) for(let j=1;j<=b.length;j++)
+    d[i][j] = Math.min(d[i-1][j]+1, d[i][j-1]+1, d[i-1][j-1] + (a[i-1]===b[j-1] ? 0 : 1));
+  return d[a.length][b.length];
+}
+function subseq(t, w){ let i = 0; for(const c of w){ if(c === t[i]) i++; if(i === t.length) return true; } return false; }
+function tokScore(t, text){
+  if(!text) return -1;
+  const words = [text, ...text.split(SEP).filter(Boolean)];
+  if(words.some(w => w.startsWith(t))) return 0;
+  if(text.includes(t)) return 1;
+  if(/^[\x00-\x7f]+$/.test(t)){
+    if(t.length >= 3 && words.some(w => w[0] === t[0] && subseq(t, w))) return 2;
+    if(t.length >= 4){ const k = t.length >= 7 ? 2 : 1; if(words.some(w => lev(t, w.slice(0, t.length)) <= k || lev(t, w) <= k)) return 3; }
+  }
+  return -1;
+}
+function fuzzy(q, fields){ // fields: [[文字, 權重offset], ...]；回傳分數（越小越符合），-1 = 不符合
+  const toks = q.toLowerCase().split(/\s+/).map(t => t.replace(/[,，]+$/, '')).filter(Boolean);
+  let total = 0;
+  for(const t of toks){
+    let best = -1;
+    for(const [txt, off] of fields){ const sc = tokScore(t, String(txt || '').toLowerCase()); if(sc >= 0 && (best < 0 || sc + off < best)) best = sc + off; }
+    if(best < 0) return -1; total += best;
+  }
+  return total;
+}
+function rank(rows, q, fn){
+  if(!q) return rows;
+  return rows.map((r, i) => ({r, i, s:fuzzy(q, fn(r))})).filter(x => x.s >= 0).sort((a, b) => a.s - b.s || a.i - b.i).map(x => x.r);
+}
 function evGroups(){
   const g = {};
   (data.events||[]).forEach(r => { const o = g[r.event] ||= {name:r.event, head:null, subs:[]}; if(r.sub) o.subs.push(r); else o.head ||= r; });
   return g;
 }
-const evHay = g => [g.name, g.head?.keywords, g.head?.info, ...g.subs.map(s=>s.sub+' '+s.info)].join(' ').toLowerCase();
 const erow = g => `<button class="erow" data-ev="${esc(g.name)}"><b>${esc(g.name)}</b> ｜ ${esc(g.head?.info||'')}</button>`;
 const notFound = what => `<div class="empty">詞典中暫無此內容，點<button class="linkbtn" data-new>＋新增 ${what}</button>嗎？</div>`;
 
@@ -275,8 +309,7 @@ function render(){
   $('#stat').textContent = online ? 'Google Sheet 已連線' : (GAS_URL ? '離線，顯示快取' : '示範模式（資料只存在這台瀏覽器）');
   const q = $('#q').value.trim(), el = $('#list'); let html = '', n = '';
   if(mode==='tags'){
-    const toks = q.toLowerCase().split(/[,，\s]+/).filter(Boolean);
-    const r = q ? data.tags.filter(x => split(x.tag).some(t => toks.includes(t.toLowerCase()))) : data.tags;
+    const r = rank(data.tags, q, x => [...split(x.tag).map(t => [t, 0]), [x.tag, .5], [x.translation, 1.5], [x.related, 3]]);
     if(q) n = r.length;
     html = r.map(x=>`<article class="card">
       <div class="chips">${split(x.tag).map(t=>`<button class="chip" data-copy="${esc(t)}" data-act="複製TAG" data-ref="${esc(t)}" title="複製 TAG">${esc(t)}</button>`).join('')}</div>
@@ -291,9 +324,11 @@ function render(){
       html = `<div class="row" style="margin:0"><button class="mini" data-back>← 返回列表</button></div>
       <article class="paper">
         <h2 data-copy="${esc(o.name)}" data-act="複製Event名稱" data-ref="${esc(o.name)}" title="點擊複製">${esc(o.name)}</h2>
-        <div class="kw"><span>${esc(split(o.head?.keywords).join(', ') || '尚無關鍵字')}</span><button class="mini sm" data-addkw="${esc(o.name)}">＋新增關鍵字</button></div>
+        <div class="kw"><span>${o.head?.category ? esc(o.head.category) + ' • ' : ''}${esc(split(o.head?.keywords).join(', ') || '尚無關鍵字')}</span><button class="mini sm" data-addkw="${esc(o.name)}">＋新增關鍵字</button></div>
         <hr>
-        ${o.subs.map(s=>`<div class="line"><button class="k" data-copy="${esc(s.sub)}" data-act="複製欄位" data-ref="${esc(o.name)} / ${esc(s.sub)}">${esc(s.sub)}</button>｜${esc(s.info)}</div>`).join('') || '<div class="line">尚無欄位資訊</div>'}
+        ${o.head?.info ? `<div class="line">說明｜${esc(o.head.info)}</div>` : ''}
+        ${o.head?.note ? `<div class="line" style="white-space:pre-wrap">備註｜${rich(o.head.note)}</div>` : ''}
+        ${o.subs.map(s=>`<div class="line"><button class="k" data-copy="${esc(s.sub)}" data-act="複製欄位" data-ref="${esc(o.name)} / ${esc(s.sub)}">${esc(s.sub)}</button>｜${esc(s.info)}</div>`).join('') || (o.head?.info || o.head?.note ? '' : '<div class="line">尚無欄位資訊</div>')}
         <div class="row"><button class="mini go" data-addsub="${esc(o.name)}">＋新增欄位</button></div>
       </article>`;
     }else if(!q){
@@ -302,14 +337,13 @@ function render(){
         .forEach(x => { if(g[x] && !seen.has(x) && names.length<8){ seen.add(x); names.push(x); } });
       html = names.length ? `<p class="note" style="margin:0">最近被查看的 Event</p>` + names.map(x=>erow(g[x])).join('') : '<div class="empty">還沒有 Event，按左側「新增 Event」建立第一筆。</div>';
     }else{
-      const ql = q.toLowerCase(), toks = ql.split(/\s+/).filter(Boolean);
-      const r = Object.values(g).filter(o => toks.every(t => evHay(o).includes(t)))
-        .sort((a,b) => (b.name.toLowerCase().includes(ql)) - (a.name.toLowerCase().includes(ql)));
+      const r = rank(Object.values(g), q, o => [[o.name, 0], [o.head?.category, 1], [o.head?.keywords, 1], [o.head?.info, 1.5],
+        ...o.subs.map(s => [s.sub, 2]), ...o.subs.map(s => [s.info, 2.5]), [o.head?.note, 3]]);
       n = r.length; html = r.length ? r.map(erow).join('') : notFound('Event');
     }
   }else{
     const all = data.threads || [];
-    const r = q ? all.filter(x => match(x,q)) : [...all].reverse().slice(0,8);
+    const r = q ? rank(all, q, x => [[x.title, 0], [x.keywords, 1], [x.mention, 1], [x.platform, 2], [x.note, 3]]) : [...all].reverse().slice(0,8);
     if(q) n = r.length;
     html = r.map(x=>`<article class="card">
       <h3>${esc(x.title)}</h3>
@@ -405,11 +439,11 @@ async function renderAdm(){
 function fillTbl(){
   const q = ($('#admQ')?.value || '').trim().toLowerCase(), t = $('#admTbl'); if(!t) return;
   if(admTab === 'logs'){
-    const r = admLogs.filter(x => !q || (x.email+' '+x.time+' '+x.action).toLowerCase().includes(q));
+    const r = admLogs.filter(x => !q || fuzzy(q, [[x.email,0],[x.time,0],[x.action,0]]) >= 0);
     t.innerHTML = `<table class="tbl"><thead><tr><th>信箱</th><th>時間</th><th>模式｜動作｜對象</th></tr></thead><tbody>${r.map(x=>`<tr><td>${esc(x.email)}</td><td style="white-space:nowrap">${esc(x.time)}</td><td>${esc(x.action)}</td></tr>`).join('') || '<tr><td colspan="3">沒有紀錄</td></tr>'}</tbody></table>`;
   }else{
-    const cols = {tags:['tag','translation','related'], events:['event','sub','info','keywords'], threads:['title','platform','mention','keywords','url']}[admSheet];
-    const r = (data[admSheet]||[]).filter(x => !q || hay(x).includes(q));
+    const cols = {tags:['tag','translation','related'], events:['event','sub','info','keywords','category','note'], threads:['title','platform','mention','keywords','url']}[admSheet];
+    const r = (data[admSheet]||[]).filter(x => !q || fuzzy(q, cols.map(c => [x[c], 0])) >= 0);
     t.innerHTML = `<table class="tbl"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}<th></th></tr></thead><tbody>${r.map(x=>`<tr>${cols.map(c=>`<td class="cl" title="${esc(x[c])}">${esc(x[c])}</td>`).join('')}<td><button class="mini" data-aedit="${x.id}">編輯</button></td></tr>`).join('') || `<tr><td colspan="${cols.length+1}">沒有資料</td></tr>`}</tbody></table>`;
   }
 }
