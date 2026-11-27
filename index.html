@@ -90,6 +90,13 @@ h1{font-size:44px;line-height:1.1;margin:0 0 14px;font-weight:800;letter-spacing
 .paper .k{font:inherit;font-weight:700;background:none;border:0;padding:0;color:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:4px}
 .paper .mini{font-family:var(--font);font-style:normal}
 .linkbtn{font:inherit;font-weight:700;color:var(--o3);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.dup{background:var(--hi);box-shadow:var(--inset);border-radius:20px;padding:16px 18px;margin-top:14px}
+.dup h4{margin:0 0 6px;font-size:14px}
+.dup .it,.cfx .it{font-size:13px;line-height:1.7;border-top:1px solid var(--line);padding:8px 0;word-break:break-word}
+.dup .it b,.cfx .it b{color:var(--o3)}
+.cfx .it{background:var(--hi);box-shadow:var(--inset);border-radius:16px;border:0;padding:12px 16px;margin:10px 0}
+.cfx p{margin:0 0 8px;font-size:14px;line-height:1.7}
+.cfx ul{margin:6px 0 10px;padding-left:20px;font-size:13px;line-height:1.7;word-break:break-word}
 .empty{text-align:center;color:var(--mute);padding:50px 10px;font-size:14px;line-height:1.8}
 dialog{border:0;border-radius:32px;background:var(--panel);color:var(--ink);box-shadow:0 30px 80px rgba(120,60,20,.35);padding:30px 32px;width:min(560px,92vw);font-family:var(--font);position:relative}
 dialog#adm{width:min(940px,96vw)}
@@ -158,9 +165,10 @@ textarea.f{min-height:120px;resize:vertical;line-height:1.7}
 <dialog id="adm">
   <button class="xbtn" type="button" data-close aria-label="關閉">✕</button>
   <h2>後台</h2>
-  <div class="tabs" id="admTabs"><button data-at="logs">使用紀錄</button><button data-at="data">資料總覽</button><button data-at="people">人員權限</button></div>
+  <div class="tabs" id="admTabs"><button data-at="logs">使用紀錄</button><button data-at="data">資料總覽</button><button data-at="dups">重複檢查</button><button data-at="people">人員權限</button></div>
   <div id="admBody"></div>
 </dialog>
+<dialog id="cf"><button class="xbtn" type="button" data-close aria-label="關閉">✕</button><h2 id="cfT"></h2><div class="cfx" id="cfB"></div><div class="acts"><button class="btn" id="cfOk"></button><button class="btn ghost" id="cfNo"></button></div></dialog>
 <div class="toast" id="toast" role="status"></div>
 
 <script>
@@ -224,7 +232,7 @@ function rich(s){ // 內文：換行保留，[文字](網址) 與網址轉成連
 async function api(op, extra={}){
   if(!GAS_URL) throw new Error('尚未設定後端網址（GAS_URL）');
   const r = await fetch(GAS_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify({op, email:user, key:GAS_KEY, ...extra}) });
-  const j = await r.json(); if(!j.ok) throw new Error(j.error); return j;
+  const j = await r.json(); if(!j.ok){ const e = new Error(j.error); e.code = j.code; throw e; } return j;
 }
 async function load(){
   if(!GAS_URL){ online=false; afterLoad(); return; }
@@ -244,7 +252,7 @@ async function write(op, sheet, row){
     saveLocal(); afterLoad(); return true;
   }
   try{ await api(op, {sheet, row}); await load(); return true; }
-  catch(e){ toast('寫入失敗：' + e.message); return false; }
+  catch(e){ if(e.code === 'duplicate'){ toast('資料庫已有相同的 TAG，已重新載入最新資料'); load(); } else toast('寫入失敗：' + e.message); return false; }
 }
 function logRaw(action){
   if(!GAS_URL || !user) return;
@@ -361,8 +369,8 @@ function render(){
 }
 
 /* ---------- 通用表單（右上角 X、儲存、取消） ---------- */
-function form({title, cols, v={}, onSave, onDelete}){
-  $('#form').innerHTML = `<button class="xbtn" type="button" data-close aria-label="關閉">✕</button><h2>${esc(title)}</h2>` + cols.map(([k,l,t,ph])=>{
+function form({title, cols, v={}, onSave, onDelete, info=''}){
+  $('#form').innerHTML = `<button class="xbtn" type="button" data-close aria-label="關閉">✕</button><h2>${esc(title)}</h2>${info}` + cols.map(([k,l,t,ph])=>{
     const id='f_'+k;
     if(t==='area') return `<label for="${id}">${l}</label><textarea class="f" id="${id}" name="${k}" placeholder="${esc(ph)}">${esc(v[k])}</textarea>`;
     if(t.startsWith('select')) return `<label for="${id}">${l}</label><select class="f" id="${id}" name="${k}">${t.split(':')[1].split(',').map(o=>`<option ${v[k]===o?'selected':''}>${o}</option>`).join('')}</select>`;
@@ -380,19 +388,92 @@ function form({title, cols, v={}, onSave, onDelete}){
   if(del) del.onclick = async () => { if(confirm('確定刪除這筆資料？')){ d.close(); await onDelete(); } };
 }
 const rowName = (sheet, r) => sheet==='tags' ? r.tag : sheet==='events' ? r.event + (r.sub ? ' / ' + r.sub : '') : r.title;
+/* ---------- 重複內容處理：同一個 TAG 只保留一筆；重複時提示並合併 ---------- */
+const tkey = t => t.trim().toLowerCase();
+const uniqTags = str => { const seen = new Set(); return split(str).filter(t => { const k = tkey(t); if(seen.has(k)) return false; seen.add(k); return true; }).join(', '); };
+const norm = u => (u || '').trim().toLowerCase().replace(/\/+$/, '');
+const cut = (x, n) => x.length > n ? x.slice(0, n) + '…' : x;
+function ask({title, html, ok='確定', cancel='取消'}){
+  return new Promise(res => {
+    const d = $('#cf'); let v = false;
+    $('#cfT').textContent = title; $('#cfB').innerHTML = html; $('#cfOk').textContent = ok; $('#cfNo').textContent = cancel;
+    $('#cfOk').onclick = () => { v = true; d.close(); }; $('#cfNo').onclick = () => d.close(); d.onclose = () => res(v);
+    d.showModal();
+  });
+}
+const entryHtml = x => `<div class="it"><b>${esc(split(x.tag).join(', '))}</b><br>${esc(x.translation)}${x.related ? '<br><span style="color:var(--mute)">話術：' + esc(cut(x.related, 60)) + '</span>' : ''}</div>`;
+const delFn = (sheet, row) => isAdmin() ? async () => { if(await write('delete', sheet, row)){ toast('已刪除'); logS(sheet, '刪除', rowName(sheet, row)); } } : null;
+
+function tagForm(v, row){
+  form({ title: row ? '編輯｜' + MODES.tags.nav : '新增 TAG', cols:F.tags, v, onSave: o => saveTag(o, row, () => tagForm(o, row)), onDelete: row ? delFn('tags', row) : null });
+}
+async function saveTag(o, row, reopen){
+  o.tag = uniqTags(o.tag);
+  const keys = new Set(split(o.tag).map(tkey));
+  const conf = data.tags.filter(x => x.id !== row?.id && split(x.tag).some(t => keys.has(tkey(t))));
+  if(!conf.length){
+    if(await write(row ? 'update' : 'add', 'tags', row ? {...row, ...o} : o)){ toast('已儲存'); logS('tags', row ? '編輯' : '新增', o.tag); }
+    return;
+  }
+  const shared = split(o.tag).filter(t => conf.some(x => split(x.tag).some(y => tkey(y) === tkey(t))));
+  const go = await ask({ title:'已有相同的 TAG', ok:'合併到原有內容', cancel:'返回修改',
+    html:`<p>你輸入的 <b>${esc(shared.join('、'))}</b> 已經在字典裡（${conf.length} 筆）：</p>${conf.map(entryHtml).join('')}<p class="note">同一個 TAG 只保留一筆資訊，避免查到互相矛盾的內容。按「合併」會整理成一筆，你可以先檢視、修改再儲存。</p>` });
+  if(!go){ reopen(); return; }
+  openMerge(row ? {...row, ...o} : conf[0], row ? conf : conf.slice(1), row ? null : o);
+}
+function openMerge(base, others, extra){
+  const cands = [base, ...(extra ? [extra] : []), ...others];
+  const uniq = k => [...new Set(cands.map(c => (c[k] || '').trim()).filter(Boolean))];
+  const merged = { tag: uniqTags(cands.map(c => c.tag).join(',')), translation: uniq('translation')[0] || '', related: uniq('related')[0] || '' };
+  const diff = (label, k, n) => uniq(k).length > 1 ? `<p>${label}有 ${uniq(k).length} 種寫法，已先採用第一種，可在下方調整：</p><ul>${uniq(k).map(x => `<li>${esc(cut(x, n))}</li>`).join('')}</ul>` : '';
+  const info = `<div class="cfx"><p>將把 ${1 + others.length} 筆現有資料${extra ? '與你剛輸入的內容' : ''}合併成一筆，所有 TAG 都會保留（共 ${split(merged.tag).length} 個）。</p>${diff('涵義', 'translation', 80)}${diff('回覆話術', 'related', 70)}</div>`;
+  form({ title:'合併相同 TAG', cols:F.tags, v:merged, info, onSave: async o => {
+    o.tag = uniqTags(o.tag);
+    if(await mergeWrite({...base, ...o}, others.map(x => x.id))){ toast('已合併'); logS('tags', '合併', o.tag); } } });
+}
+async function mergeWrite(row, rem){
+  if(!GAS_URL){
+    const i = data.tags.findIndex(x => x.id === row.id); row.updated = new Date().toISOString();
+    if(i > -1) data.tags[i] = row; data.tags = data.tags.filter(x => !rem.includes(x.id)); saveLocal(); afterLoad(); return true;
+  }
+  try{ await api('merge', {sheet:'tags', row, remove:rem}); await load(); return true; }
+  catch(e){ toast('合併失敗：' + e.message); return false; }
+}
+function threadForm(v, row){
+  form({ title: row ? '編輯｜' + MODES.threads.nav : '新增討論串', cols:F.threads, v, onSave: o => saveThread(o, row, () => threadForm(o, row)), onDelete: row ? delFn('threads', row) : null });
+}
+async function saveThread(o, row, reopen){
+  const dup = data.threads.find(x => x.id !== row?.id && ((o.url && norm(x.url) === norm(o.url)) || x.title.trim().toLowerCase() === o.title.trim().toLowerCase()));
+  if(!dup){
+    if(await write(row ? 'update' : 'add', 'threads', row ? {...row, ...o} : o)){ toast('已儲存'); logS('threads', row ? '編輯' : '新增', o.title); }
+    return;
+  }
+  if(row){ toast('已有相同標題或連結的討論串：' + dup.title); reopen(); return; }
+  const go = await ask({ title:'已有相同的討論串', ok:'更新原有內容', cancel:'返回修改',
+    html:`<p>「<b>${esc(dup.title)}</b>」（${esc(dup.platform)}｜${esc(dup.mention)}）已經在字典裡。</p><p class="note">按「更新原有內容」會用你剛輸入的內容更新那一筆（關鍵字會合併，空白欄位不會覆蓋），不會多出重複的一筆。</p>` });
+  if(!go){ reopen(); return; }
+  const m = {...dup}; Object.keys(o).forEach(k => { if(o[k]) m[k] = k === 'keywords' ? mergeKw(dup.keywords, o.keywords) : o[k]; });
+  if(await write('update', 'threads', m)){ toast('已更新原有討論串'); logS('threads', '更新重複', m.title); }
+}
 function openEdit(sheet, id){
   const row = data[sheet].find(x => x.id === id); if(!row) return;
-  const cols = sheet==='tags' ? F.tags : sheet==='events' ? F.evfull : F.threads;
-  form({ title:'編輯｜' + MODES[sheet].nav, cols, v:row,
+  if(sheet === 'tags') return tagForm(row, row);
+  if(sheet === 'threads') return threadForm(row, row);
+  form({ title:'編輯｜' + MODES[sheet].nav, cols:F.evfull, v:row,
     onSave: async o => { if(await write('update', sheet, {...row, ...o})){ toast('已儲存'); logS(sheet, '編輯', rowName(sheet, o)); } },
-    onDelete: isAdmin() ? async () => { if(await write('delete', sheet, row)){ toast('已刪除'); logS(sheet, '刪除', rowName(sheet, row)); } } : null });
+    onDelete: delFn(sheet, row) });
 }
 function openNew(q=''){
-  if(mode==='tags') form({ title:'新增 TAG', cols:F.tags, v:{tag:q}, onSave: async o => { if(await write('add','tags',o)){ toast('已儲存'); logS('tags','新增',o.tag); } } });
+  if(mode==='tags') tagForm({tag:q}, null);
   else if(mode==='events') form({ title:'新增 Event', cols:F.evnew, v:/\./.test(q)?{event:q}:{keywords:q}, onSave: async o => {
-    if(evGroups()[o.event]){ toast('這個 Event 已存在'); selEvent=o.event; render(); return; }
-    if(await write('add','events',{event:o.event, sub:'', info:o.info, keywords:o.keywords})){ toast('已儲存'); logS('events','新增',o.event); selEvent=o.event; $('#q').value=''; render(); } } });
-  else form({ title:'新增討論串', cols:F.threads, v:{keywords:q}, onSave: async o => { if(await write('add','threads',o)){ toast('已儲存'); logS('threads','新增',o.title); } } });
+    const same = Object.keys(evGroups()).find(x => x.toLowerCase() === o.event.toLowerCase());
+    if(same){
+      if(await ask({ title:'已有相同的 Event', ok:'查看原有 Event', cancel:'返回',
+        html:`<p><b>${esc(same)}</b> 已經在字典裡。建議直接查看它，並用「＋新增欄位」或「＋新增關鍵字」補充資訊。</p>` })){ $('#q').value=''; openEvent(same); }
+      return;
+    }
+    if(await write('add','events',{event:o.event, sub:'', info:o.info, keywords:o.keywords, category:o.category, note:o.note})){ toast('已儲存'); logS('events','新增',o.event); selEvent=o.event; $('#q').value=''; render(); } } });
+  else threadForm({keywords:q}, null);
 }
 const mergeKw = (a, b) => [...new Set([...split(a), ...split(b)])].join(', ');
 function addKwEvent(name){
@@ -408,6 +489,13 @@ function addKwThread(id){
 }
 function addSub(name){
   form({ title:'新增欄位｜' + name, cols:F.evsub, onSave: async o => {
+    const old = evGroups()[name]?.subs.find(x => x.sub.trim().toLowerCase() === o.sub.toLowerCase());
+    if(old){
+      if(!await ask({ title:'已有相同的欄位', ok:'更新說明', cancel:'返回',
+        html:`<p><b>${esc(old.sub)}</b> 已經在 ${esc(name)} 裡：</p><div class="it">${esc(old.info) || '（尚無說明）'}</div><p class="note">按「更新說明」會把說明改成你剛輸入的內容：${esc(o.info) || '（空白，將保留原說明）'}</p>` })) return;
+      if(await write('update','events',{...old, info:o.info || old.info})){ toast('已更新欄位說明'); logS('events','更新欄位',name + ' / ' + o.sub); }
+      return;
+    }
     if(await write('add','events',{event:name, sub:o.sub, info:o.info, keywords:''})){ toast('已新增欄位'); logS('events','新增欄位',name + ' / ' + o.sub); } } });
 }
 function openEvent(name){
@@ -427,6 +515,7 @@ async function renderAdm(){
     b.innerHTML = `<div class="bar"><input class="f" id="admQ" placeholder="篩選信箱、時間或動作"><button class="mini" data-refresh>重新載入</button></div><div class="tblwrap" id="admTbl"></div>`;
   }else if(admTab === 'data'){
     b.innerHTML = `<div class="bar"><select class="f" id="admSheet" style="max-width:200px">${Object.entries(MODES).map(([k,v])=>`<option value="${k}" ${k===admSheet?'selected':''}>${v.nav}</option>`).join('')}</select><input class="f" id="admQ" placeholder="搜尋全部欄位"></div><div class="tblwrap" id="admTbl"></div>`;
+  }else if(admTab === 'dups'){ drawDups(); return;
   }else{
     const rows = [{email:OWNER, role:'owner', fixed:true}, ...data.admins.filter(a => (a.email||'').toLowerCase() !== OWNER)];
     const own = role() === 'owner';
@@ -436,6 +525,25 @@ async function renderAdm(){
     return;
   }
   fillTbl();
+}
+let admClusters = [];
+function tagClusters(){   // 以「共用 TAG」把彼此重複的資料歸成一組
+  const rows = data.tags, parent = rows.map((_, i) => i), seen = {};
+  const find = i => parent[i] === i ? i : (parent[i] = find(parent[i]));
+  rows.forEach((r, i) => split(r.tag).forEach(t => { const k = tkey(t); if(k in seen) parent[find(i)] = find(seen[k]); else seen[k] = i; }));
+  const g = {}; rows.forEach((r, i) => (g[find(i)] ||= []).push(r));
+  return Object.values(g).filter(a => a.length > 1);
+}
+function drawDups(){
+  admClusters = tagClusters();
+  const grp = (rows, fn) => { const g = {}; rows.forEach(r => { const k = fn(r); if(k) (g[k] ||= []).push(r); }); return Object.values(g).filter(a => a.length > 1); };
+  let html = admClusters.map((c, i) => {
+    const k = {}; c.forEach(r => [...new Set(split(r.tag).map(tkey))].forEach(t => k[t] = (k[t] || 0) + 1));
+    return `<div class="dup"><h4>TAG 重複：${esc(Object.keys(k).filter(t => k[t] > 1).join('、'))}（${c.length} 筆）</h4>${c.map(entryHtml).join('')}<div class="row"><button class="mini go" data-merge="${i}">合併這組</button></div></div>`;
+  }).join('');
+  html += grp(data.events, r => (r.event + '|' + r.sub).toLowerCase()).map(g => `<div class="dup"><h4>Event 重複：${esc(g[0].event)}${g[0].sub ? ' / ' + esc(g[0].sub) : '（Event 本身）'}（${g.length} 筆）</h4>${g.map(r => `<div class="it">${esc(r.info) || '（無說明）'} <button class="mini sm" data-dedit="events:${r.id}">編輯</button></div>`).join('')}</div>`).join('');
+  html += grp(data.threads, r => norm(r.url) || r.title.trim().toLowerCase()).map(g => `<div class="dup"><h4>討論串重複：${esc(g[0].title)}（${g.length} 筆）</h4>${g.map(r => `<div class="it">${esc(r.platform)}｜${esc(r.mention)}｜${esc(cut(r.note || '', 40))} <button class="mini sm" data-dedit="threads:${r.id}">編輯</button></div>`).join('')}</div>`).join('');
+  $('#admBody').innerHTML = `<p class="note" style="margin:0">同一個 TAG 只應出現在一筆資料中。這裡列出重複的 TAG、Event（含欄位）與討論串；TAG 可一鍵合併，其他請編輯或刪除較舊的一筆。</p>` + (html || '<div class="empty">目前沒有重複資料 🎉</div>');
 }
 function fillTbl(){
   const q = ($('#admQ')?.value || '').trim().toLowerCase(), t = $('#admTbl'); if(!t) return;
@@ -455,7 +563,7 @@ async function adminOp(op, target, extra){
 
 /* ---------- 事件 ---------- */
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-m],[data-copy],[data-edit],[data-ev],[data-back],[data-addsub],[data-addkw],[data-addkwth],[data-toggle],[data-new],[data-close],[data-at],[data-aedit],[data-refresh],[data-padd],[data-pdel]');
+  const t = e.target.closest('[data-m],[data-copy],[data-edit],[data-ev],[data-back],[data-addsub],[data-addkw],[data-addkwth],[data-toggle],[data-new],[data-close],[data-at],[data-aedit],[data-refresh],[data-padd],[data-pdel],[data-merge],[data-dedit]');
   if(!t) return;
   const d = t.dataset;
   if(d.m){ mode=d.m; selEvent=null; location.hash=mode; $('#q').value=''; paintChrome(); render(); }
@@ -471,6 +579,8 @@ document.addEventListener('click', e => {
   else if(d.close !== undefined) t.closest('dialog').close();
   else if(d.at){ admTab = d.at; renderAdm(); }
   else if(d.aedit) openEdit(admSheet, d.aedit);
+  else if(d.merge !== undefined){ const c = admClusters[+d.merge]; if(c) openMerge(c[0], c.slice(1), null); }
+  else if(d.dedit){ const [sh, id] = d.dedit.split(':'); openEdit(sh, id); }
   else if(d.refresh !== undefined) renderAdm();
   else if(d.padd !== undefined){ const em = $('#pEmail').value.trim().toLowerCase(); const msg = checkEmail(em); if(msg){ toast(msg); return; } adminOp('admin_add', em, {role:$('#pRole').value}); }
   else if(d.pdel){ if(confirm('確定移除 ' + d.pdel + '？')) adminOp('admin_del', d.pdel); }
