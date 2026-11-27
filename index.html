@@ -2,6 +2,15 @@
 <!--
   CS客服部門通用詞典  v1.1.0（2026-11-27）
   更新紀錄
+  v1.2.0
+   - Threads：內文展開後，下方出現「收合」按鈕；來源改為 Slack / Notion 圖示標籤
+   - 搜尋：命中的關鍵字在結果中標色；搜尋框加 ✕ 清除鈕，Esc 也可清除
+   - 複製：按鈕本身變成「✓ 已複製」1.5 秒；小螢幕提示不再被手指擋住
+   - 表單：「儲存／取消」固定在視窗底部
+   - 編輯 TAG：手機可長按 TAG 出現「刪除」選項（拖曳仍保留）
+   - 表單：已填內容時按 ✕／取消／Esc／點視窗外，先確認是否放棄
+  v1.1.1
+   - Threads：點擊內文文字也能展開／收合（與右側 ▾ 按鈕相同）；點內文裡的連結或正在選取文字時不會觸發
   v1.1.0
    - Account Tag：新增 TAG 時即時比對重複（停頓 0.4 秒），內嵌提示 +「合併到原有內容」
    - Account Tag：合併畫面新增「本次新增的 TAG」欄位；原有 TAG 唯讀
@@ -19,7 +28,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="app-version" content="v1.1.0">
+<meta name="app-version" content="v1.2.0">
 <title>CS客服部門通用詞典</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='52' font-size='88' text-anchor='middle' dominant-baseline='central'%3E%F0%9F%8C%8F%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -99,6 +108,23 @@ h1{font-size:44px;line-height:1.1;margin:0 0 14px;font-weight:800;letter-spacing
 .bodywrap{display:flex;gap:10px;align-items:flex-start}
 .body{flex:1;min-width:0;font-size:14px;line-height:1.8;white-space:pre-wrap;word-break:break-word;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 .body.open{display:block}
+.body.clickable{cursor:pointer}
+mark{background:rgba(245,143,91,.38);color:inherit;border-radius:4px;padding:0 2px}
+.search input[type=search]::-webkit-search-cancel-button{-webkit-appearance:none;display:none}
+.qx{flex:none;width:28px;height:28px;border-radius:50%;border:0;background:var(--hi);box-shadow:var(--raise);color:var(--ink);font-size:12px;cursor:pointer;padding:0}
+.qx[hidden]{display:none}
+.collapse{margin-top:10px}
+.collapse[hidden]{display:none}
+.plat{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--ink);background:var(--hi);box-shadow:var(--inset);border-radius:999px;padding:5px 14px 5px 6px}
+.plat b{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;color:#fff;font-size:12px;line-height:1}
+.plat.slack b{background:#611f69}
+.plat.notion b{background:#191919;box-shadow:0 0 0 1px rgba(255,255,255,.28)}
+.mini.go.copied{background:#3f8a54;box-shadow:0 6px 14px rgba(63,138,84,.3)}
+.chip.copied{background:#3f8a54;color:#fff;box-shadow:none}
+.chipmenu{position:fixed;z-index:310;background:var(--panel);border-radius:16px;box-shadow:var(--raise);padding:6px}
+.chipmenu button{display:flex;align-items:center;gap:8px;font:inherit;font-size:13px;font-weight:700;color:var(--bad);background:none;border:0;padding:10px 14px;border-radius:12px;cursor:pointer;word-break:break-all;text-align:left}
+.chipmenu svg{width:18px;height:18px;flex:none}
+#form .acts{position:sticky;bottom:0;margin:20px -32px -30px;padding:14px 32px 30px;background:var(--panel);box-shadow:0 -10px 14px -12px var(--sh);z-index:5}
 .body a{color:var(--o3);font-weight:700}
 .arrow{flex:none;width:30px;height:30px;border-radius:50%;border:0;background:var(--panel);box-shadow:var(--raise);cursor:pointer;color:var(--ink);font-size:13px;transition:transform .2s}
 .arrow[hidden]{display:none}.arrow.up{transform:rotate(180deg)}
@@ -169,6 +195,7 @@ textarea.f.auto{min-height:50px;resize:none;overflow:hidden;line-height:1.6;word
 .ver{margin-top:28px;text-align:center;font-size:11.5px;color:var(--mute)}
 @media(prefers-color-scheme:dark){#gate{background:rgba(36,27,21,.65)}.err{color:#ff9a7a}}
 @media(max-width:860px){.shell{padding:20px 18px 30px;border-radius:32px}main{grid-template-columns:1fr;gap:28px}.hero{position:static}h1{font-size:34px}nav{margin-left:0;width:100%}.paper{padding:26px 22px}.paper h2{font-size:32px}dialog{padding:26px 20px}}
+@media(max-width:860px){#form .acts{margin:20px -20px -26px;padding:14px 20px 26px}.toast{bottom:96px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -196,7 +223,7 @@ textarea.f.auto{min-height:50px;resize:none;overflow:hidden;line-height:1.6;word
     <section class="hero">
       <h1 id="title"></h1>
       <p class="sub" id="desc"></p>
-      <div class="search"><input id="q" type="search" autocomplete="off" aria-label="搜尋"><span id="cnt" style="font-size:12px;color:var(--mute);padding-right:12px"></span></div>
+      <div class="search"><input id="q" type="search" autocomplete="off" aria-label="搜尋"><button type="button" class="qx" id="qx" aria-label="清除搜尋" title="清除搜尋（Esc）" hidden>✕</button><span id="cnt" style="font-size:12px;color:var(--mute);padding-right:12px"></span></div>
       <button class="btn" id="addBtn"></button>
       <div class="stat"><span class="dot off" id="dot"></span><span id="stat"></span></div>
     </section>
@@ -217,7 +244,7 @@ textarea.f.auto{min-height:50px;resize:none;overflow:hidden;line-height:1.6;word
 
 <script>
 /* ---------- 設定（上傳前請填入 Apps Script /exec 網址） ---------- */
-const VERSION = 'v1.1.0';
+const VERSION = 'v1.2.0';
 const APP = 'CS客服部門通用詞典';
 const OWNER = 'fin.chang@swag.live';   // 需與 Code.gs 的 OWNER 相同
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbzkjBuI_kjLcK7kBVCzxzIfxlDGs465NYAKUvSkt6Fk0cXN-TuvOOQjp79BbYsH0Vt2dg/exec';                     // 留空 = 示範模式（資料只存在這台瀏覽器，也不會記錄 logs）
@@ -234,7 +261,7 @@ const T_TR = ['translation','Translation 涵義','text','套利，利用活動�
 const T_RL = ['related','Related 回覆話術（選填）','area',''];
 const F = {
   tags:      [['tag','Tag Name（多個以逗號分隔）','tagarea','fpid_phone_abuse, referral_abuse_5000'], T_TR, T_RL],
-  tagsEdit:  [['tag','Tag Name（拖曳 TAG 到右側垃圾桶可刪除）','chips','',{drag:true}], ['newtag','新增 TAG（選填，多個以逗號分隔）','taginput','例如：foo_abuse, bar'], T_TR, T_RL],
+  tagsEdit:  [['tag','Tag Name（拖曳 TAG 到右側垃圾桶可刪除；手機可長按 TAG）','chips','',{drag:true}], ['newtag','新增 TAG（選填，多個以逗號分隔）','taginput','例如：foo_abuse, bar'], T_TR, T_RL],
   tagsMerge: [['tag','Tag Name（原有，唯讀）','chips'], ['newtag','本次新增的 TAG（選填，多個以逗號分隔）','taginput','輸入要補充的 TAG'], T_TR, T_RL],
   evnew: [['event','Event Name','text','v2.user.clicked'],['info','Description 說明','text','查用戶在時間段內點了什麼'],['keywords','關鍵字（逗號分隔）','text','點, 點擊, 操作, click'],['category','Category 分類','text','帳號'],['note','Note 備註（選填）','area','適用用戶與主播']],
   evsub: [['sub','欄位名稱','text','button.id'],['info','說明','text','使用者點擊的按鈕']],
@@ -297,6 +324,8 @@ const ls = { get:(k,d)=>{try{return localStorage.getItem(k)??d}catch{return d}},
 const split = s => String(s||'').split(/[,，]/).map(x=>x.trim()).filter(Boolean);
 const PEN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
 const TRASH = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>';
+const platBadge = p => { const k = String(p || '').toLowerCase();
+  return k === 'slack' ? '<span class="plat slack"><b>#</b>Slack</span>' : k === 'notion' ? '<span class="plat notion"><b>N</b>Notion</span>' : `<span class="chip plain">${esc(p || '')}</span>`; };
 const penBtn = (attr, cls='') => `<button class="pen ${cls}" ${attr} aria-label="編輯" title="編輯">${PEN}</button>`;
 let mode = (location.hash.slice(1) in MODES) ? location.hash.slice(1) : 'tags';
 let data = JSON.parse(ls.get('dict_local2', 'null') || 'null') || JSON.parse(JSON.stringify(SEED));
@@ -307,13 +336,28 @@ const role = () => user === OWNER ? 'owner' : ((data.admins.find(a => (a.email||
 const isAdmin = () => !!role();
 
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),2400)}
-async function copy(text, msg='已複製'){try{await navigator.clipboard.writeText(text);toast(msg)}catch{toast('複製失敗，請手動選取')}}
-function rich(s){ // 內文：換行保留，[文字](網址) 與網址轉成連結，:emoji: 轉成圖示
+async function copy(text, msg='已複製'){try{await navigator.clipboard.writeText(text);toast(msg);return true}catch{toast('複製失敗，請手動選取');return false}}
+function flashCopied(t){   // 按鈕本身變成「✓ 已複製」，1.5 秒後還原
+  if(!t.matches('.mini,.chip')) return;
+  clearTimeout(t._ft);
+  if(t.classList.contains('mini')){ if(t._orig == null) t._orig = t.innerHTML; t.textContent = '✓ 已複製'; }
+  t.classList.add('copied');
+  t._ft = setTimeout(() => { t.classList.remove('copied'); if(t._orig != null){ t.innerHTML = t._orig; t._orig = null; } }, 1500);
+}
+const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+function hl(s, q){   // 轉義後，把搜尋關鍵字用 <mark> 標色（只標「包含」的字；縮寫／錯字比對不標）
+  s = String(s ?? '');
+  const toks = String(q || '').toLowerCase().split(/\s+/).map(t => t.replace(/[,，]+$/, '')).filter(Boolean);
+  if(!toks.length) return esc(s);
+  const re = new RegExp('(' + toks.sort((a, b) => b.length - a.length).map(reEsc).join('|') + ')', 'gi');
+  return s.split(re).map((p, i) => i % 2 ? `<mark>${esc(p)}</mark>` : esc(p)).join('');
+}
+function rich(s, q=''){ // 內文：換行保留，[文字](網址) 與網址轉成連結，:emoji: 轉成圖示
   return emojify(String(s||'')).split(/(\[[^\]]+\]\(https?:\/\/[^)\s]+\)|https?:\/\/[^\s<>)\]]+)/g).map(p=>{
     let m = p.match(/^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/);
-    if(m) return `<a href="${esc(m[2])}" target="_blank" rel="noopener">${esc(m[1])}</a>`;
-    if(/^https?:\/\//.test(p)) return `<a href="${esc(p)}" target="_blank" rel="noopener">${esc(p)}</a>`;
-    return esc(p);
+    if(m) return `<a href="${esc(m[2])}" target="_blank" rel="noopener">${hl(m[1], q)}</a>`;
+    if(/^https?:\/\//.test(p)) return `<a href="${esc(p)}" target="_blank" rel="noopener">${hl(p, q)}</a>`;
+    return hl(p, q);
   }).join('');
 }
 
@@ -396,7 +440,7 @@ function evGroups(){
   (data.events||[]).forEach(r => { const o = g[r.event] ||= {name:r.event, head:null, subs:[]}; if(r.sub) o.subs.push(r); else o.head ||= r; });
   return g;
 }
-const erow = g => `<button class="erow" data-ev="${esc(g.name)}"><b>${esc(g.name)}</b> ｜ ${esc(g.head?.info||'')}</button>`;
+const erow = (g, q='') => `<button class="erow" data-ev="${esc(g.name)}"><b>${hl(g.name, q)}</b> ｜ ${hl(g.head?.info||'', q)}</button>`;
 const notFound = what => `<div class="empty">詞典中暫無此內容，點<button class="linkbtn" data-new>＋新增 ${what}</button>嗎？</div>`;
 
 /* ---------- 畫面 ---------- */
@@ -407,6 +451,7 @@ function paintChrome(){
   $('#q').placeholder = m.ph; $('#addBtn').textContent = '＋ ' + m.add;
 }
 function render(){
+  $('#qx').hidden = !$('#q').value;
   $('#dot').className = 'dot' + (online ? '' : ' off');
   $('#stat').textContent = online ? 'Google Sheet 已連線' : (GAS_URL ? '離線，顯示快取' : '示範模式（資料只存在這台瀏覽器）');
   const q = $('#q').value.trim(), el = $('#list'); let html = '', n = '';
@@ -414,9 +459,9 @@ function render(){
     const r = rank(data.tags, q, x => [...split(x.tag).map(t => [t, 0]), [x.tag, .5], [x.translation, 1.5], [x.related, 3]]);
     if(q) n = r.length;
     html = r.map(x=>`<article class="card">
-      <div class="chips">${split(x.tag).map(t=>`<button class="chip" data-copy="${esc(t)}" data-act="複製TAG" data-ref="${esc(t)}" title="複製 TAG">${esc(t)}</button>`).join('')}</div>
-      <p class="mean">${esc(x.translation)}</p>
-      ${x.related?`<div class="reply">${esc(x.related)}</div>`:''}
+      <div class="chips">${split(x.tag).map(t=>`<button class="chip" data-copy="${esc(t)}" data-act="複製TAG" data-ref="${esc(t)}" title="複製 TAG">${hl(t, q)}</button>`).join('')}</div>
+      <p class="mean">${hl(x.translation, q)}</p>
+      ${x.related?`<div class="reply">${hl(x.related, q)}</div>`:''}
       ${x.related?`<div class="row"><button class="mini go" data-copy="${esc(x.related)}" data-msg="已複製回覆話術" data-act="複製回覆話術" data-ref="${esc(x.tag)}">複製回覆話術</button></div>`:''}
       ${penBtn('data-edit="'+esc(x.id)+'"', 'top')}</article>`).join('');
     if(q && !r.length) html = notFound('TAG');
@@ -442,17 +487,17 @@ function render(){
     }else{
       const r = rank(Object.values(g), q, o => [[o.name, 0], [o.head?.category, 1], [o.head?.keywords, 1], [o.head?.info, 1.5],
         ...o.subs.map(s => [s.sub, 2]), ...o.subs.map(s => [s.info, 2.5]), [o.head?.note, 3]]);
-      n = r.length; html = r.length ? r.map(erow).join('') : notFound('Event');
+      n = r.length; html = r.length ? r.map(g => erow(g, q)).join('') : notFound('Event');
     }
   }else{
     const all = data.threads || [];
     const r = q ? rank(all, q, x => [[x.title, 0], [x.keywords, 1], [x.mention, 1], [x.platform, 2], [x.note, 3]]) : [...all].reverse().slice(0,8);
     if(q) n = r.length;
     html = r.map(x=>`<article class="card">
-      <h3>${esc(x.title)}</h3>
-      <div class="chips" style="margin:10px 0 8px"><span class="chip plain">${esc(x.platform||'')}</span>${split(x.mention).map(t=>`<button class="chip" data-copy="${esc(t)}" data-act="複製@對象" data-ref="${esc(x.title)} → ${esc(t)}" title="複製 @ 名稱">${esc(t)}</button>`).join('')}</div>
-      <div class="kwline"><i>${esc(split(x.keywords).join(', ') || '尚無關鍵字')}</i><button class="mini sm" data-addkwth="${x.id}">＋新增關鍵字</button></div>
-      ${x.note?`<div class="bodywrap"><div class="body">${rich(x.note)}</div><button class="arrow" hidden data-toggle aria-label="展開或收合">▾</button></div>`:''}
+      <h3>${hl(x.title, q)}</h3>
+      <div class="chips" style="margin:10px 0 8px">${platBadge(x.platform)}${split(x.mention).map(t=>`<button class="chip" data-copy="${esc(t)}" data-act="複製@對象" data-ref="${esc(x.title)} → ${esc(t)}" title="複製 @ 名稱">${hl(t, q)}</button>`).join('')}</div>
+      <div class="kwline"><i>${hl(split(x.keywords).join(', ') || '尚無關鍵字', q)}</i><button class="mini sm" data-addkwth="${x.id}">＋新增關鍵字</button></div>
+      ${x.note?`<div class="bodywrap"><div class="body">${rich(x.note, q)}</div><button class="arrow" hidden data-toggle aria-label="展開或收合" aria-expanded="false">▾</button></div><button class="mini sm collapse" type="button" data-collapse hidden>收合 ▴</button>`:''}
       <div class="row">${x.url?`<button class="mini go" data-copy="${esc(x.url)}" data-msg="已複製連結" data-act="複製連結" data-ref="${esc(x.title)}">複製連結</button>`:'<span class="note" style="margin:0">尚未填連結</span>'}</div>
       ${penBtn('data-edit="'+esc(x.id)+'"', 'top')}</article>`).join('');
     if(q && !r.length) html = notFound('討論串');
@@ -460,7 +505,7 @@ function render(){
   }
   $('#cnt').textContent = n;
   el.innerHTML = html;
-  requestAnimationFrame(() => document.querySelectorAll('.body').forEach(b => { const a = b.parentElement.querySelector('.arrow'); if(a) a.hidden = !(b.scrollHeight > b.clientHeight + 2); }));
+  requestAnimationFrame(() => document.querySelectorAll('.body').forEach(b => { const a = b.parentElement.querySelector('.arrow'); if(a){ a.hidden = !(b.scrollHeight > b.clientHeight + 2); b.classList.toggle('clickable', !a.hidden); } }));
 }
 
 /* ---------- 通用表單：必填檢查、寫入成功才關閉 ---------- */
@@ -479,15 +524,37 @@ function fieldHtml(c, v){
   return `<div class="fld" data-k="${k}">${lab}${ctl}<div class="ferr" id="err_${k}"></div></div>`;
 }
 const curValues = f => Object.fromEntries([...new FormData(f)].map(([k, v]) => [k, String(v)]));
+const snapForm = f => { f._snap = JSON.stringify(curValues(f)); };
+const isDirty = f => f._snap !== undefined && JSON.stringify(curValues(f)) !== f._snap;
+let guarding = false;
+async function guardClose(){   // 有未儲存的內容時，先確認是否放棄
+  const d = $('#dlg'), f = $('#form');
+  if(guarding) return;
+  if(isDirty(f)){
+    guarding = true;
+    const go = await ask({ title:'放棄剛才填的內容嗎？', ok:'放棄並關閉', cancel:'繼續編輯', html:'<p>已填寫的內容還沒儲存，關閉後會消失。</p>' });
+    guarding = false; if(!go) return;
+  }
+  d.close();
+}
+(() => {
+  const d = $('#dlg'); let down = false;
+  const outside = e => { const r = d.getBoundingClientRect(); return e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom; };
+  d.addEventListener('cancel', e => { if(isDirty($('#form'))){ e.preventDefault(); guardClose(); } });   // Esc
+  d.addEventListener('pointerdown', e => { down = e.target === d && outside(e); });
+  d.addEventListener('click', e => { if(down && e.target === d && outside(e)) guardClose(); down = false; });   // 點視窗外
+  d.addEventListener('pointerdown', e => { if(!e.target.closest('.chipmenu')) d.querySelector('.chipmenu')?.remove(); }, true);
+})();
 /* onSave 回傳 true 才會關閉視窗；回傳其他值（失敗、或已切換成別的畫面）則保留視窗與已填內容 */
 function form({title, cols, v={}, onSave, onDelete, info='', back, after}){
   const d = $('#dlg'), f = $('#form');
   f.innerHTML = `<button class="xbtn" type="button" data-close aria-label="關閉">✕</button><h2>${esc(title)}</h2>${info}` + cols.map(c => fieldHtml(c, v)).join('') +
     `<div class="acts"><button class="btn" value="ok" id="saveBtn">儲存</button><button class="btn ghost" value="cancel" formnovalidate>取消</button>${back?'<button class="btn ghost" type="button" id="backBtn">← 返回修改</button>':''}${onDelete?'<button class="btn danger sp" type="button" id="delBtn">刪除</button>':''}</div>`;
   if(!d.open) d.showModal();
+  d.querySelector('.chipmenu')?.remove();
   f.oninput = e => { const fl = e.target.closest('.fld'); if(fl){ fl.classList.remove('bad'); const er = fl.querySelector('.ferr'); if(er) er.textContent = ''; } };
   f.onsubmit = async e => {
-    if(e.submitter?.value === 'cancel') return;      // 取消：交給 dialog 原生關閉
+    if(e.submitter?.value === 'cancel'){ e.preventDefault(); guardClose(); return; }
     e.preventDefault();
     const fd = new FormData(f), out = {}, miss = [];
     cols.forEach(c => {
@@ -508,6 +575,7 @@ function form({title, cols, v={}, onSave, onDelete, info='', back, after}){
   if(del) del.onclick = async () => { if(confirm('確定刪除這筆資料？') && await onDelete() !== false) d.close(); };
   const bk = f.querySelector('#backBtn'); if(bk) bk.onclick = back;
   if(after) after(f);
+  snapForm(f);
   const first = f.querySelector('.f'); if(first) first.focus({preventScroll:true});
 }
 const rowName = (sheet, r) => sheet==='tags' ? r.tag : sheet==='events' ? r.event + (r.sub ? ' / ' + r.sub : '') : r.title;
@@ -636,27 +704,37 @@ function enableDrag(f, st){
       html:`<p>要從這筆資料刪除 <b>${esc(t)}</b> 嗎？</p><p class="note">按下「確定刪除」後會立即更新 Google Sheet。</p>` });
     if(!go) return;
     const next = tags.filter(x => tkey(x) !== tkey(t)), nr = {...st.row, tag:next.join(', ')};
-    if(await write('update', 'tags', nr)){ st.row = nr; tags = next; draw(); toast('已刪除 TAG'); logS('tags', '刪除TAG', t); }
+    if(await write('update', 'tags', nr)){ st.row = nr; tags = next; draw(); snapForm(f); toast('已刪除 TAG'); logS('tags', '刪除TAG', t); }
   };
+  const showMenu = (c, t) => {
+    dlg.querySelector('.chipmenu')?.remove();
+    const r = c.getBoundingClientRect(), m = document.createElement('div');
+    m.className = 'chipmenu'; m.innerHTML = `<button type="button">${TRASH}<span>刪除「${esc(t)}」</span></button>`;
+    m.style.top = (r.bottom + 8) + 'px'; m.style.left = Math.max(8, Math.min(r.left, innerWidth - 230)) + 'px';
+    m.querySelector('button').onclick = () => { m.remove(); askDel(t); };
+    dlg.appendChild(m); navigator.vibrate?.(15);
+  };
+  box.addEventListener('contextmenu', e => e.preventDefault());
   draw();
   trash.onclick = () => toast('把上方的 TAG 拖曳到這裡即可刪除');
   box.addEventListener('pointerdown', e => {
     const c = e.target.closest('.chip[data-tag]'); if(!c || e.button > 0) return;
     drag = {c, t:c.dataset.tag, x:e.clientX, y:e.clientY, on:false, g:null, id:e.pointerId};
     try{ c.setPointerCapture(e.pointerId); }catch{}
+    if(e.pointerType !== 'mouse') drag.lp = setTimeout(() => { if(drag && !drag.on) showMenu(drag.c, drag.t); }, 550);   // 長按：出現刪除選項
   });
   box.addEventListener('pointermove', e => {
     if(!drag || e.pointerId !== drag.id) return;
     if(!drag.on){
       if(Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 6) return;
-      drag.on = true; const g = drag.c.cloneNode(true); g.className = 'chip dragghost'; g.removeAttribute('tabindex'); dlg.appendChild(g); drag.g = g; drag.c.style.opacity = .35;
+      drag.on = true; clearTimeout(drag.lp); const g = drag.c.cloneNode(true); g.className = 'chip dragghost'; g.removeAttribute('tabindex'); dlg.appendChild(g); drag.g = g; drag.c.style.opacity = .35;
     }
     drag.g.style.left = e.clientX + 'px'; drag.g.style.top = e.clientY + 'px';
     trash.classList.toggle('hot', over(e));
   });
   const end = e => {
     if(!drag || e.pointerId !== drag.id) return;
-    const d0 = drag; drag = null;
+    const d0 = drag; drag = null; clearTimeout(d0.lp);
     if(d0.g) d0.g.remove(); d0.c.style.opacity = ''; trash.classList.remove('hot');
     if(d0.on && e.type === 'pointerup' && over(e)) askDel(d0.t);
   };
@@ -833,21 +911,31 @@ async function adminOp(op, target, extra){
 }
 
 /* ---------- 事件 ---------- */
+function toggleBody(wrap){
+  const b = wrap.querySelector('.body'), a = wrap.querySelector('.arrow'), c = wrap.nextElementSibling;
+  if(!b || !a || a.hidden) return;
+  const open = b.classList.toggle('open'); a.classList.toggle('up', open); a.setAttribute('aria-expanded', open);
+  if(c && c.matches('[data-collapse]')) c.hidden = !open;
+  if(!open) wrap.closest('article')?.scrollIntoView({block:'nearest', behavior:'smooth'});   // 收合後回到卡片位置
+}
 document.addEventListener('click', e => {
-  const t = e.target.closest('[data-m],[data-copy],[data-edit],[data-ev],[data-back],[data-addsub],[data-addkw],[data-addkwth],[data-toggle],[data-new],[data-close],[data-at],[data-aedit],[data-refresh],[data-padd],[data-pdel],[data-merge],[data-dedit]');
+  const bd = e.target.closest('.body');   // 點內文文字 = 按右側 ▾；點連結或正在選取文字時不觸發
+  if(bd && !e.target.closest('a') && !String(getSelection()).length){ toggleBody(bd.parentElement); return; }
+  const t = e.target.closest('[data-m],[data-copy],[data-edit],[data-ev],[data-back],[data-addsub],[data-addkw],[data-addkwth],[data-toggle],[data-new],[data-close],[data-at],[data-aedit],[data-refresh],[data-padd],[data-pdel],[data-merge],[data-dedit],[data-collapse]');
   if(!t) return;
   const d = t.dataset;
   if(d.m){ mode=d.m; selEvent=null; location.hash=mode; $('#q').value=''; paintChrome(); render(); }
-  else if(d.copy !== undefined){ if(d.copy){ copy(d.copy, d.msg); logAct(d.act, d.ref); } }
+  else if(d.copy !== undefined){ if(d.copy){ copy(d.copy, d.msg).then(ok => ok && flashCopied(t)); logAct(d.act, d.ref); } }
   else if(d.edit) openEdit(mode, d.edit);
   else if(d.ev) openEvent(d.ev);
   else if(d.back !== undefined){ selEvent=null; render(); }
   else if(d.addsub) addSub(d.addsub);
   else if(d.addkw) addKwEvent(d.addkw);
   else if(d.addkwth) addKwThread(d.addkwth);
-  else if(d.toggle !== undefined){ t.previousElementSibling.classList.toggle('open'); t.classList.toggle('up'); }
+  else if(d.toggle !== undefined) toggleBody(t.parentElement);
+  else if(d.collapse !== undefined) toggleBody(t.previousElementSibling);
   else if(d.new !== undefined) openNew($('#q').value.trim());
-  else if(d.close !== undefined) t.closest('dialog').close();
+  else if(d.close !== undefined){ const dl = t.closest('dialog'); if(dl.id === 'dlg') guardClose(); else dl.close(); }
   else if(d.at){ admTab = d.at; renderAdm(); }
   else if(d.aedit) openEdit(admSheet, d.aedit);
   else if(d.merge !== undefined){ const c = admClusters[+d.merge]; if(c) tagMerge({conf:c, cur:null, back:null}); }
@@ -862,6 +950,9 @@ let sTimer;
 $('#q').addEventListener('input', () => { selEvent = null; render(); clearTimeout(sTimer); const v = $('#q').value.trim();
   if(LOG_SEARCH && v.length >= 2) sTimer = setTimeout(() => logAct('搜尋', v), 1500); });
 $('#addBtn').onclick = () => openNew('');
+const clearQ = () => { $('#q').value = ''; selEvent = null; render(); $('#q').focus(); };
+$('#qx').onclick = clearQ;
+$('#q').addEventListener('keydown', e => { if(e.key === 'Escape' && $('#q').value){ e.preventDefault(); clearQ(); } });
 $('#setBtn').onclick = () => { admTab = 'logs'; $('#adm').showModal(); renderAdm(); };
 document.addEventListener('visibilitychange', () => { if(!document.hidden && user && GAS_URL && !$('#dlg').open) load(); });
 document.addEventListener('keydown', e => { if(e.key==='/' && user && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){ e.preventDefault(); $('#q').focus(); } });
