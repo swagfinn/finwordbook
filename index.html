@@ -1,8 +1,25 @@
 <!DOCTYPE html>
+<!--
+  CS客服部門通用詞典  v1.1.0（2026-11-27）
+  更新紀錄
+  v1.1.0
+   - Account Tag：新增 TAG 時即時比對重複（停頓 0.4 秒），內嵌提示 +「合併到原有內容」
+   - Account Tag：合併畫面新增「本次新增的 TAG」欄位；原有 TAG 唯讀
+   - Account Tag：Tag Name 改為自動長高多行欄位 + 即時拆分的 TAG 小標籤
+   - Account Tag：編輯視窗 TAG 以單顆按鈕呈現，拖曳到垃圾桶 → 二次確認 → 更新 Google Sheet
+   - Threads：新增視窗欄位順序改為 標題 → 來源 → 連結 → 內文 → 來自哪位同仁 → 關鍵字
+   - Threads：內文 Slack :emoji: 短代碼即時轉成 emoji；從內文第一行自動帶入「來自哪位同仁」
+   - Threads：標題／連結重複時即時提示並可一鍵「更新原有內容」
+   - 所有編輯按鈕改為橘色鉛筆圖示、移到卡片右上角
+   - 所有表單：除標示「選填」外皆為必填；未填時阻擋送出並由上而下引導
+   - 表單改為「寫入成功後才關閉」，失敗時保留已填內容
+  v1.0.0  初版（使用者提供）
+-->
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="app-version" content="v1.1.0">
 <title>CS客服部門通用詞典</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext x='50' y='52' font-size='88' text-anchor='middle' dominant-baseline='central'%3E%F0%9F%8C%8F%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,7 +28,7 @@
 :root{
   --bg:#f8ecdf; --panel:#fbf2e8; --ink:#1b1714; --mute:#8a7c70; --line:#efdcc9;
   --o1:#ffb480; --o2:#f58f5b; --o3:#e8764a; --hi:#fffaf4; --sh:rgba(222,150,100,.28);
-  --paper:#fffdf9; --paperink:#141210;
+  --paper:#fffdf9; --paperink:#141210; --bad:#c2452b;
   --raise:8px 8px 22px var(--sh),-6px -6px 16px rgba(255,255,255,.85);
   --inset:inset 3px 3px 8px rgba(222,150,100,.22),inset -3px -3px 8px rgba(255,255,255,.9);
   --font:'Montserrat','Noto Sans TC',system-ui,sans-serif;
@@ -19,7 +36,7 @@
 }
 @media (prefers-color-scheme:dark){:root{
   --bg:#241b15; --panel:#2d231b; --ink:#f7eadc; --mute:#b09d8c; --line:#43342a; --hi:#35291f; --sh:rgba(0,0,0,.45);
-  --paper:#382c21; --paperink:#f7eadc;
+  --paper:#382c21; --paperink:#f7eadc; --bad:#ff9a7a;
   --raise:8px 8px 22px rgba(0,0,0,.45),-6px -6px 16px rgba(255,255,255,.04);
   --inset:inset 3px 3px 8px rgba(0,0,0,.4),inset -3px -3px 8px rgba(255,255,255,.04);}}
 *{box-sizing:border-box}
@@ -39,7 +56,7 @@ nav button:not([aria-selected=true]):hover{box-shadow:var(--inset)}
 .icon:active,.xbtn:active{box-shadow:var(--inset)}
 .icon[hidden]{display:none}
 .xbtn{position:absolute;top:18px;right:20px;width:36px;height:36px;font-size:14px}
-button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2.5px solid var(--o3);outline-offset:2px}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,.chip:focus-visible{outline:2.5px solid var(--o3);outline-offset:2px}
 main{display:grid;grid-template-columns:minmax(260px,360px) 1fr;gap:42px;margin-top:44px;position:relative}
 .hero{position:sticky;top:24px;align-self:start}
 h1{font-size:44px;line-height:1.1;margin:0 0 14px;font-weight:800;letter-spacing:-.01em}
@@ -50,13 +67,15 @@ h1{font-size:44px;line-height:1.1;margin:0 0 14px;font-weight:800;letter-spacing
 .search:focus-within{outline:2.5px solid var(--o3);outline-offset:2px}
 .btn{font:inherit;font-size:13px;font-weight:700;color:#fff;border:0;border-radius:999px;padding:13px 26px;cursor:pointer;background:linear-gradient(135deg,var(--o1),var(--o2));box-shadow:0 8px 18px var(--sh)}
 .btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.6;cursor:progress}
 .btn.ghost{background:var(--panel);color:var(--ink);box-shadow:var(--raise)}
 .btn.danger{background:none;color:#c2452b;box-shadow:none;padding-left:0}
 .hero .btn{margin-top:22px}
 .stat{margin-top:22px;font-size:12.5px;color:var(--mute);display:flex;gap:8px;align-items:center}
 .dot{width:9px;height:9px;border-radius:50%;background:#9ad07a}.dot.off{background:var(--o2)}
 .list{display:flex;flex-direction:column;gap:20px;min-width:0}
-.card{background:var(--panel);border-radius:28px;box-shadow:var(--raise);padding:24px 28px}
+.card{background:var(--panel);border-radius:28px;box-shadow:var(--raise);padding:24px 28px;position:relative}
+.card>:first-child{padding-right:52px}
 .card h3{margin:0 0 4px;font-size:17px;line-height:1.4;word-break:break-word}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
 .chip{font:inherit;font-size:12.5px;font-weight:700;border:0;cursor:pointer;color:var(--o3);background:var(--hi);box-shadow:var(--inset);border-radius:999px;padding:6px 14px}
@@ -68,6 +87,11 @@ h1{font-size:44px;line-height:1.1;margin:0 0 14px;font-weight:800;letter-spacing
 .mini:active{box-shadow:var(--inset)}
 .mini.go{background:linear-gradient(135deg,var(--o1),var(--o2));color:#fff;box-shadow:0 6px 14px var(--sh)}
 .sp{margin-left:auto}
+.pen{width:38px;height:38px;border-radius:50%;border:0;cursor:pointer;display:inline-grid;place-items:center;padding:0;color:#fff;background:linear-gradient(135deg,var(--o2),var(--o3));box-shadow:0 6px 14px var(--sh)}
+.pen svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.pen:active{transform:translateY(1px)}
+.pen.top{position:absolute;top:18px;right:20px}
+.pen.sm{width:30px;height:30px}.pen.sm svg{width:15px;height:15px}
 .note{color:var(--mute);font-size:13.5px;line-height:1.7;margin:8px 0 0}
 .kwline{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13.5px;color:var(--mute);margin:2px 0 12px}
 .kwline i{font-style:italic}
@@ -91,21 +115,39 @@ h1{font-size:44px;line-height:1.1;margin:0 0 14px;font-weight:800;letter-spacing
 .paper .mini{font-family:var(--font);font-style:normal}
 .linkbtn{font:inherit;font-weight:700;color:var(--o3);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
 .dup{background:var(--hi);box-shadow:var(--inset);border-radius:20px;padding:16px 18px;margin-top:14px}
+.dup.hint{border-left:4px solid var(--o3);margin-top:10px}
 .dup h4{margin:0 0 6px;font-size:14px}
 .dup .it,.cfx .it{font-size:13px;line-height:1.7;border-top:1px solid var(--line);padding:8px 0;word-break:break-word}
 .dup .it b,.cfx .it b{color:var(--o3)}
+.dup p.note{margin:6px 0 0}
 .cfx .it{background:var(--hi);box-shadow:var(--inset);border-radius:16px;border:0;padding:12px 16px;margin:10px 0}
 .cfx p{margin:0 0 8px;font-size:14px;line-height:1.7}
 .cfx ul{margin:6px 0 10px;padding-left:20px;font-size:13px;line-height:1.7;word-break:break-word}
 .empty{text-align:center;color:var(--mute);padding:50px 10px;font-size:14px;line-height:1.8}
-dialog{border:0;border-radius:32px;background:var(--panel);color:var(--ink);box-shadow:0 30px 80px rgba(120,60,20,.35);padding:30px 32px;width:min(560px,92vw);font-family:var(--font);position:relative}
+dialog{border:0;border-radius:32px;background:var(--panel);color:var(--ink);box-shadow:0 30px 80px rgba(120,60,20,.35);padding:30px 32px;width:min(560px,92vw);max-height:92vh;overflow:auto;font-family:var(--font);position:relative}
 dialog#adm{width:min(940px,96vw)}
 dialog::backdrop{background:rgba(60,30,10,.4);backdrop-filter:blur(3px)}
 dialog h2{margin:0 0 18px;font-size:20px;padding-right:44px}
 label{display:block;font-size:12.5px;font-weight:700;color:var(--mute);margin:14px 0 6px}
+.req{color:var(--bad)}
 input.f,textarea.f,select.f{width:100%;font:inherit;font-size:14.5px;color:var(--ink);background:var(--panel);border:0;border-radius:16px;box-shadow:var(--inset);padding:12px 16px}
 textarea.f{min-height:120px;resize:vertical;line-height:1.7}
-.acts{display:flex;gap:12px;margin-top:24px;align-items:center}
+textarea.f.auto{min-height:50px;resize:none;overflow:hidden;line-height:1.6;word-break:break-all}
+.fld.bad .f,.fld.bad .chipbox{outline:2px solid var(--bad);outline-offset:1px}
+.ferr{color:var(--bad);font-size:12.5px;margin:5px 4px 0}
+.ferr:empty{display:none}
+.tagprev{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tagprev:empty{display:none}
+.tagprev .chip{font-size:12px;padding:4px 11px}
+.chip.plain.dupc{color:var(--bad)}
+.tagrow{display:flex;gap:10px;align-items:stretch}
+.chipbox{flex:1;min-width:0;display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 14px;border-radius:16px;box-shadow:var(--inset);background:var(--hi);min-height:52px}
+.chipbox .chip{cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;word-break:break-all;text-align:left}
+.chipbox .chip.ro{cursor:default;touch-action:auto;color:var(--mute)}
+.trash{flex:none;width:56px;border:0;border-radius:16px;background:var(--panel);box-shadow:var(--raise);cursor:pointer;display:grid;place-items:center;color:var(--ink);transition:transform .15s,background .15s}
+.trash.hot{background:var(--bad);color:#fff;transform:scale(1.08)}
+.dragghost{position:fixed;z-index:300;pointer-events:none;transform:translate(-50%,-50%);box-shadow:var(--raise);cursor:grabbing}
+.acts{display:flex;gap:12px;margin-top:24px;align-items:center;flex-wrap:wrap}
 .tabs{display:flex;gap:6px;margin:0 0 18px;flex-wrap:wrap}
 .tabs button{font:inherit;font-size:13px;font-weight:700;color:var(--ink);background:none;border:0;padding:9px 18px;border-radius:999px;cursor:pointer}
 .tabs button[aria-selected=true]{background:linear-gradient(135deg,var(--o1),var(--o2));color:#fff}
@@ -116,7 +158,7 @@ textarea.f{min-height:120px;resize:vertical;line-height:1.7}
 .tbl .cl{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .bar .f{flex:1;min-width:160px}
-.toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,30px);background:var(--ink);color:var(--bg);padding:12px 22px;border-radius:999px;font-size:13.5px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:99}
+.toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,30px);background:var(--ink);color:var(--bg);padding:12px 22px;border-radius:999px;font-size:13.5px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:400;max-width:92vw;text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 #gate{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;background:rgba(248,236,223,.6);backdrop-filter:blur(14px);transition:opacity .5s}
 #gate.out{opacity:0;pointer-events:none}
@@ -124,8 +166,9 @@ textarea.f{min-height:120px;resize:vertical;line-height:1.7}
 .gcard h2{margin:0 0 10px;font-size:26px}
 .gcard .sub{margin-bottom:8px}
 .err{color:#c2452b;font-size:13px;line-height:1.6;min-height:22px;margin:10px 4px 0}
+.ver{margin-top:28px;text-align:center;font-size:11.5px;color:var(--mute)}
 @media(prefers-color-scheme:dark){#gate{background:rgba(36,27,21,.65)}.err{color:#ff9a7a}}
-@media(max-width:860px){.shell{padding:20px 18px 30px;border-radius:32px}main{grid-template-columns:1fr;gap:28px}.hero{position:static}h1{font-size:34px}nav{margin-left:0;width:100%}.paper{padding:26px 22px}.paper h2{font-size:32px}}
+@media(max-width:860px){.shell{padding:20px 18px 30px;border-radius:32px}main{grid-template-columns:1fr;gap:28px}.hero{position:static}h1{font-size:34px}nav{margin-left:0;width:100%}.paper{padding:26px 22px}.paper h2{font-size:32px}dialog{padding:26px 20px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
@@ -159,6 +202,7 @@ textarea.f{min-height:120px;resize:vertical;line-height:1.7}
     </section>
     <section class="list" id="list" aria-live="polite"></section>
   </main>
+  <div class="ver" id="ver"></div>
 </div>
 
 <dialog id="dlg"><form method="dialog" id="form" autocomplete="off"></form></dialog>
@@ -173,6 +217,7 @@ textarea.f{min-height:120px;resize:vertical;line-height:1.7}
 
 <script>
 /* ---------- 設定（上傳前請填入 Apps Script /exec 網址） ---------- */
+const VERSION = 'v1.1.0';
 const APP = 'CS客服部門通用詞典';
 const OWNER = 'fin.chang@swag.live';   // 需與 Code.gs 的 OWNER 相同
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbzkjBuI_kjLcK7kBVCzxzIfxlDGs465NYAKUvSkt6Fk0cXN-TuvOOQjp79BbYsH0Vt2dg/exec';                     // 留空 = 示範模式（資料只存在這台瀏覽器，也不會記錄 logs）
@@ -184,14 +229,19 @@ const MODES = {
   events:  { nav:'Mixpanel Event', short:'模式二 Mixpanel', title:'Mixpanel Event 速查', desc:'輸入想查的內容，系統將為你找到適合查看的 Event Name。', ph:'例如：點擊、button、v2.user.clicked', add:'新增 Event', what:'Event' },
   threads: { nav:'Threads',        short:'模式三 討論串',   title:'討論串捷徑',          desc:'快速查找討論串，並知道要 @ 哪位負責人', ph:'輸入主題或關鍵字，例如 VIP、廣告', add:'新增討論串', what:'討論串' }
 };
-/* 表單欄位：[key, 標籤, 類型, 範例] */
+/* 表單欄位：[key, 標籤, 類型, 範例, {opt:選填, drag:可拖曳刪除}]；標籤含「選填」或 opt:true 即為選填，其餘一律必填 */
+const T_TR = ['translation','Translation 涵義','text','套利，利用活動規則漏洞不當取得獎勵'];
+const T_RL = ['related','Related 回覆話術（選填）','area',''];
 const F = {
-  tags: [['tag','Tag Name（多個以逗號分隔）','text','fpid_phone_abuse, referral_abuse_5000'],['translation','Translation 涵義','text','套利，利用活動規則漏洞不當取得獎勵'],['related','Related 回覆話術（選填）','area','']],
+  tags:      [['tag','Tag Name（多個以逗號分隔）','tagarea','fpid_phone_abuse, referral_abuse_5000'], T_TR, T_RL],
+  tagsEdit:  [['tag','Tag Name（拖曳 TAG 到右側垃圾桶可刪除）','chips','',{drag:true}], ['newtag','新增 TAG（選填，多個以逗號分隔）','taginput','例如：foo_abuse, bar'], T_TR, T_RL],
+  tagsMerge: [['tag','Tag Name（原有，唯讀）','chips'], ['newtag','本次新增的 TAG（選填，多個以逗號分隔）','taginput','輸入要補充的 TAG'], T_TR, T_RL],
   evnew: [['event','Event Name','text','v2.user.clicked'],['info','Description 說明','text','查用戶在時間段內點了什麼'],['keywords','關鍵字（逗號分隔）','text','點, 點擊, 操作, click'],['category','Category 分類','text','帳號'],['note','Note 備註（選填）','area','適用用戶與主播']],
   evsub: [['sub','欄位名稱','text','button.id'],['info','說明','text','使用者點擊的按鈕']],
-  evfull: [['event','Event Name','text',''],['sub','欄位名稱（空白 = Event 本身）','text',''],['info','說明','text',''],['keywords','關鍵字（逗號分隔）','text',''],['category','Category 分類','text',''],['note','Note 備註','area','']],
+  evfull: [['event','Event Name','text',''],['sub','欄位名稱（選填，空白 = Event 本身）','text',''],['info','說明','text',''],['keywords','關鍵字（選填，逗號分隔）','text',''],['category','Category 分類（選填）','text',''],['note','Note 備註（選填）','area','']],
   kw: [['keywords','新增關鍵字（可多個，以逗號分隔）','text','例如：點擊, 操作']],
-  threads: [['title','標題','text','VIP 尊榮預約系統'],['platform','來源','select:slack,notion',''],['url','連結網址','text','https://swaglive.slack.com/…'],['mention','來自哪位同仁','text','@Ashley'],['keywords','關鍵字（逗號分隔）','text','廣告, 商務, MKT'],['note','內文','area','貼上討論串的內文']]
+  threads: [['title','標題','text','VIP 尊榮預約系統'],['platform','來源','select:slack,notion',''],['url','連結網址','text','https://swaglive.slack.com/…'],['note','內文','area','貼上討論串內文（Slack 的 :mega: 會自動轉成 📣）'],['mention','來自哪位同仁（會從內文自動帶入，可手動修改）','text','@fin.chang'],['keywords','關鍵字（逗號分隔）','text','廣告, 商務, MKT']],
+  threadsEdit: [['title','標題','text','VIP 尊榮預約系統'],['platform','來源','select:slack,notion',''],['url','連結網址','text','https://swaglive.slack.com/…'],['mention','來自哪位同仁','text','@Ashley'],['keywords','關鍵字（逗號分隔）','text','廣告, 商務, MKT'],['note','內文','area','貼上討論串的內文']]
 };
 const SEED = {
   tags:[{id:'s1',tag:'fingerprint-pro:failed, suspicious',translation:'裝置FPID重複，不得享有新手優惠、導購優惠',related:'您好，經查詢，您的帳號由於不符合購買該優惠禮包的條件，請選擇購買其他禮包，其餘使用不受影響。\n此限制並非代表您已進行違規儲值，而是系統在帳號評估過程中，基於風險控管機制，對部分帳號先行關閉儲值功能以避免後續風險。\n\n相關判斷屬於平台風控機制的一環，判斷條件與細節無法對外說明，客服端亦無法人工調整，敬請見諒。'}],
@@ -204,11 +254,50 @@ const SEED = {
     note:'SWAG 廣告與商務合作頁面上線囉！\n  https://swag.live/business\n原本 footer 分成「廣告」和「業務合作」兩個信箱入口，現在合併成一個「廣告與商務合作」頁面，可以看到：\n • 站內廣告版位（Banner、直播間置頂公告連結等）\n • 品牌／異業合作、創作者內容媒合\n • 線上需求表單，填完會直接進到 MKT 的追蹤表\n 之後大家收到品牌、廠商、供應商的合作詢問，直接分享這個連結請對方填單，我會負責後續聯繫～\n有任何問題或發現頁面 bug 都歡迎找我！\n特別感謝 [@Kenny Hung](https://swaglive.slack.com/team/U0AN3CQV7G8) [@Home Liu](https://swaglive.slack.com/team/U0AHPVB96QK) [@Nick Kuo](https://swaglive.slack.com/team/U08LGFEL717) [@Zooey](https://swaglive.slack.com/team/U0531HBQPD5) 協助，讓頁面順利上線'}]
 };
 
+/* ---------- Slack emoji 短代碼（內建常用，不依賴外部資源；公司自訂 emoji 會保留原文字） ---------- */
+const EMOJI = Object.fromEntries(`mega=📣 loudspeaker=📢 tada=🎉 confetti_ball=🎊 white_check_mark=✅ heavy_check_mark=✔️ ballot_box_with_check=☑️ x=❌ negative_squared_cross_mark=❎ warning=⚠️ no_entry=⛔ no_entry_sign=🚫 stop_sign=🛑 construction=🚧 rotating_light=🚨 bulb=💡 pushpin=📌 round_pushpin=📍 paperclip=📎 link=🔗 memo=📝 pencil=📝 pencil2=✏️ clipboard=📋 calendar=📆 date=📅 spiral_calendar_pad=🗓️ bell=🔔 no_bell=🔕 lock=🔒 unlock=🔓 key=🔑 gear=⚙️ wrench=🔧 hammer=🔨 tools=🛠️ hammer_and_wrench=🛠️ bug=🐛 mag=🔍 mag_right=🔎 bar_chart=📊 chart_with_upwards_trend=📈 chart_with_downwards_trend=📉 email=📧 envelope=✉️ incoming_envelope=📨 inbox_tray=📥 outbox_tray=📤 phone=☎️ telephone_receiver=📞 iphone=📱 computer=💻 desktop_computer=🖥️ keyboard=⌨️ hourglass=⌛ hourglass_flowing_sand=⏳ alarm_clock=⏰ watch=⌚ stopwatch=⏱️ bookmark=🔖 books=📚 book=📖 notebook=📓 ledger=📒 scroll=📜 newspaper=📰 file_folder=📁 open_file_folder=📂 page_facing_up=📄 page_with_curl=📃 card_index=📇 label=🏷️ receipt=🧾 gift=🎁 trophy=🏆 medal=🏅 first_place_medal=🥇 crown=👑 gem=💎 moneybag=💰 money_with_wings=💸 dollar=💵 credit_card=💳 coin=🪙 shopping_cart=🛒 package=📦 truck=🚚 house=🏠 office=🏢 earth_asia=🌏 earth_africa=🌍 earth_americas=🌎 globe_with_meridians=🌐 sunny=☀️ partly_sunny=⛅ cloud=☁️ umbrella=☂️ snowflake=❄️ zap=⚡ droplet=💧 rainbow=🌈 fire=🔥 sparkles=✨ star=⭐ star2=🌟 stars=🌠 dizzy=💫 boom=💥 collision=💥 rocket=🚀 eyes=👀 eye=👁️ brain=🧠 pray=🙏 thumbsup=👍 +1=👍 thumbsdown=👎 -1=👎 clap=👏 raised_hands=🙌 muscle=💪 ok_hand=👌 wave=👋 point_right=👉 point_left=👈 point_up=☝️ point_up_2=👆 point_down=👇 handshake=🤝 fist=✊ punch=👊 v=✌️ crossed_fingers=🤞 raised_hand=✋ hand=✋ open_hands=👐 writing_hand=✍️ raising_hand=🙋 bow=🙇 no_good=🙅 busts_in_silhouette=👥 bust_in_silhouette=👤 heart=❤️ green_heart=💚 blue_heart=💙 yellow_heart=💛 purple_heart=💜 orange_heart=🧡 black_heart=🖤 white_heart=🤍 broken_heart=💔 sparkling_heart=💖 smile=😄 smiley=😃 grinning=😀 grin=😁 laughing=😆 satisfied=😆 sweat_smile=😅 joy=😂 rofl=🤣 blush=😊 slightly_smiling_face=🙂 upside_down_face=🙃 wink=😉 relieved=😌 heart_eyes=😍 star-struck=🤩 kissing_heart=😘 yum=😋 stuck_out_tongue=😛 stuck_out_tongue_winking_eye=😜 smirk=😏 sunglasses=😎 nerd_face=🤓 thinking_face=🤔 neutral_face=😐 expressionless=😑 unamused=😒 roll_eyes=🙄 face_with_rolling_eyes=🙄 grimacing=😬 pensive=😔 disappointed=😞 worried=😟 confused=😕 slightly_frowning_face=🙁 persevere=😣 cry=😢 sob=😭 angry=😠 rage=😡 triumph=😤 scream=😱 fearful=😨 cold_sweat=😰 sweat=😓 tired_face=😫 weary=😩 sleeping=😴 zzz=💤 mask=😷 face_palm=🤦 facepalm=🤦 shrug=🤷 hugging_face=🤗 hugs=🤗 partying_face=🥳 pleading_face=🥺 saluting_face=🫡 zany_face=🤪 money_mouth_face=🤑 face_with_monocle=🧐 exploding_head=🤯 melting_face=🫠 innocent=😇 smiling_imp=😈 skull=💀 ghost=👻 alien=👽 robot_face=🤖 poop=💩 hankey=💩 100=💯 speech_balloon=💬 thought_balloon=💭 see_no_evil=🙈 hear_no_evil=🙉 speak_no_evil=🙊 white_circle=⚪ black_circle=⚫ red_circle=🔴 large_blue_circle=🔵 large_green_circle=🟢 large_yellow_circle=🟡 large_orange_circle=🟠 large_purple_circle=🟣 arrow_right=➡️ arrow_left=⬅️ arrow_up=⬆️ arrow_down=⬇️ arrow_forward=▶️ arrows_counterclockwise=🔄 repeat=🔁 new=🆕 free=🆓 up=🆙 ok=🆗 cool=🆒 sos=🆘 vs=🆚 heavy_plus_sign=➕ heavy_minus_sign=➖ question=❓ grey_question=❔ exclamation=❗ heavy_exclamation_mark=❗ grey_exclamation=❕ bangbang=‼️ interrobang=⁉️ information_source=ℹ️ 1234=🔢 hash=#️⃣ one=1️⃣ two=2️⃣ three=3️⃣ four=4️⃣ five=5️⃣ six=6️⃣ seven=7️⃣ eight=8️⃣ nine=9️⃣ keycap_ten=🔟 ticket=🎫 movie_camera=🎥 video_camera=📹 camera=📷 microphone=🎤 studio_microphone=🎙️ headphones=🎧 speaker=🔈 mute=🔇 loud_sound=🔊 tv=📺 radio=📻 video_game=🎮 dart=🎯 game_die=🎲 art=🎨 musical_note=🎵 notes=🎶 birthday=🎂 cake=🍰 coffee=☕ beer=🍺 beers=🍻 pizza=🍕 hamburger=🍔 fries=🍟 cookie=🍪 apple=🍎 strawberry=🍓 watermelon=🍉 car=🚗 bus=🚌 airplane=✈️ bike=🚲 dog=🐶 cat=🐱 rabbit=🐰 bear=🐻 panda_face=🐼 pig=🐷 monkey_face=🐵 monkey=🐒 penguin=🐧 chicken=🐔 unicorn_face=🦄 turtle=🐢 snake=🐍 whale=🐳 fish=🐟 octopus=🐙 bee=🐝 butterfly=🦋 cherry_blossom=🌸 rose=🌹 sunflower=🌻 tulip=🌷 four_leaf_clover=🍀 evergreen_tree=🌲 palm_tree=🌴 cactus=🌵 mushroom=🍄 moon=🌙 full_moon=🌕 comet=☄️ checkered_flag=🏁 triangular_flag_on_post=🚩`
+  .split(/\s+/).filter(Boolean).map(p => { const i = p.indexOf('='); return [p.slice(0, i), p.slice(i + 1)]; }));
+const TONE = {2:'🏻',3:'🏼',4:'🏽',5:'🏾',6:'🏿'};
+function emojify(s){   // :mega: → 📣；:+1::skin-tone-3: → 👍🏽；找不到的短代碼（公司自訂 emoji）保留原文
+  s = String(s ?? ''); if(s.indexOf(':') < 0) return s;
+  let out = '', i = 0;
+  while(i < s.length){
+    if(s[i] === ':'){
+      const m = /^:([a-z0-9_+\-]+):/i.exec(s.slice(i, i + 60)), e = m && EMOJI[m[1].toLowerCase()];
+      if(e){
+        let r = e; i += m[0].length;
+        const t = /^:skin-tone-([2-6]):/.exec(s.slice(i, i + 16));
+        if(t){ r = r.replace(/\uFE0F/g, '') + TONE[t[1]]; i += t[0].length; }
+        out += r; continue;
+      }
+    }
+    out += s[i++];
+  }
+  return out;
+}
+function wireEmoji(el, after){   // 輸入框內即時轉換，並保持游標位置
+  el.addEventListener('input', () => {
+    const v = el.value, nv = emojify(v);
+    if(nv !== v){ const c = emojify(v.slice(0, el.selectionStart)).length; el.value = nv; el.setSelectionRange(c, c); }
+    if(after) after();
+  });
+}
+function parseSender(text){   // 「Christine Lin  [下午 12:37]」→ @christine.lin，並回傳移除該行後的內文
+  const lines = String(text).split('\n'), i = lines.findIndex(l => l.trim());
+  if(i < 0) return null;
+  const m = lines[i].match(/^\s*([A-Za-z][A-Za-z.'’-]*(?:\s+[A-Za-z][A-Za-z.'’-]*)*)\s*\[[^\]]+\]\s*$/);
+  if(!m) return null;
+  return { mention: '@' + m[1].replace(/['’]/g, '').trim().toLowerCase().split(/\s+/).join('.'), rest: lines.slice(i + 1).join('\n').replace(/^\n+/, '') };
+}
+
 /* ---------- 狀態與工具 ---------- */
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ls = { get:(k,d)=>{try{return localStorage.getItem(k)??d}catch{return d}}, set:(k,v)=>{try{localStorage.setItem(k,v)}catch{}} };
 const split = s => String(s||'').split(/[,，]/).map(x=>x.trim()).filter(Boolean);
+const PEN = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+const TRASH = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>';
+const penBtn = (attr, cls='') => `<button class="pen ${cls}" ${attr} aria-label="編輯" title="編輯">${PEN}</button>`;
 let mode = (location.hash.slice(1) in MODES) ? location.hash.slice(1) : 'tags';
 let data = JSON.parse(ls.get('dict_local2', 'null') || 'null') || JSON.parse(JSON.stringify(SEED));
 data.admins ||= []; data.recent ||= [];
@@ -217,10 +306,10 @@ const saveLocal = () => ls.set('dict_local2', JSON.stringify(data));
 const role = () => user === OWNER ? 'owner' : ((data.admins.find(a => (a.email||'').toLowerCase() === user) || {}).role || '');
 const isAdmin = () => !!role();
 
-function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),1800)}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),2400)}
 async function copy(text, msg='已複製'){try{await navigator.clipboard.writeText(text);toast(msg)}catch{toast('複製失敗，請手動選取')}}
-function rich(s){ // 內文：換行保留，[文字](網址) 與網址轉成連結
-  return String(s||'').split(/(\[[^\]]+\]\(https?:\/\/[^)\s]+\)|https?:\/\/[^\s<>)\]]+)/g).map(p=>{
+function rich(s){ // 內文：換行保留，[文字](網址) 與網址轉成連結，:emoji: 轉成圖示
+  return emojify(String(s||'')).split(/(\[[^\]]+\]\(https?:\/\/[^)\s]+\)|https?:\/\/[^\s<>)\]]+)/g).map(p=>{
     let m = p.match(/^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/);
     if(m) return `<a href="${esc(m[2])}" target="_blank" rel="noopener">${esc(m[1])}</a>`;
     if(/^https?:\/\//.test(p)) return `<a href="${esc(p)}" target="_blank" rel="noopener">${esc(p)}</a>`;
@@ -252,7 +341,11 @@ async function write(op, sheet, row){
     saveLocal(); afterLoad(); return true;
   }
   try{ await api(op, {sheet, row}); await load(); return true; }
-  catch(e){ if(e.code === 'duplicate'){ toast('資料庫已有相同的 TAG，已重新載入最新資料'); load(); } else toast('寫入失敗：' + e.message); return false; }
+  catch(e){
+    if(e.code === 'duplicate'){ toast(sheet === 'tags' ? '資料庫已有相同的 TAG，已重新載入最新資料' : '資料庫已有相同標題或連結的討論串，已重新載入最新資料'); load(); }
+    else toast('寫入失敗：' + e.message);
+    return false;
+  }
 }
 function logRaw(action){
   if(!GAS_URL || !user) return;
@@ -324,7 +417,8 @@ function render(){
       <div class="chips">${split(x.tag).map(t=>`<button class="chip" data-copy="${esc(t)}" data-act="複製TAG" data-ref="${esc(t)}" title="複製 TAG">${esc(t)}</button>`).join('')}</div>
       <p class="mean">${esc(x.translation)}</p>
       ${x.related?`<div class="reply">${esc(x.related)}</div>`:''}
-      <div class="row">${x.related?`<button class="mini go" data-copy="${esc(x.related)}" data-msg="已複製回覆話術" data-act="複製回覆話術" data-ref="${esc(x.tag)}">複製回覆話術</button>`:''}<button class="mini sp" data-edit="${x.id}">編輯</button></div></article>`).join('');
+      ${x.related?`<div class="row"><button class="mini go" data-copy="${esc(x.related)}" data-msg="已複製回覆話術" data-act="複製回覆話術" data-ref="${esc(x.tag)}">複製回覆話術</button></div>`:''}
+      ${penBtn('data-edit="'+esc(x.id)+'"', 'top')}</article>`).join('');
     if(q && !r.length) html = notFound('TAG');
   }else if(mode==='events'){
     const g = evGroups();
@@ -359,7 +453,8 @@ function render(){
       <div class="chips" style="margin:10px 0 8px"><span class="chip plain">${esc(x.platform||'')}</span>${split(x.mention).map(t=>`<button class="chip" data-copy="${esc(t)}" data-act="複製@對象" data-ref="${esc(x.title)} → ${esc(t)}" title="複製 @ 名稱">${esc(t)}</button>`).join('')}</div>
       <div class="kwline"><i>${esc(split(x.keywords).join(', ') || '尚無關鍵字')}</i><button class="mini sm" data-addkwth="${x.id}">＋新增關鍵字</button></div>
       ${x.note?`<div class="bodywrap"><div class="body">${rich(x.note)}</div><button class="arrow" hidden data-toggle aria-label="展開或收合">▾</button></div>`:''}
-      <div class="row">${x.url?`<button class="mini go" data-copy="${esc(x.url)}" data-msg="已複製連結" data-act="複製連結" data-ref="${esc(x.title)}">複製連結</button>`:'<span class="note" style="margin:0">尚未填連結</span>'}<button class="mini sp" data-edit="${x.id}">編輯</button></div></article>`).join('');
+      <div class="row">${x.url?`<button class="mini go" data-copy="${esc(x.url)}" data-msg="已複製連結" data-act="複製連結" data-ref="${esc(x.title)}">複製連結</button>`:'<span class="note" style="margin:0">尚未填連結</span>'}</div>
+      ${penBtn('data-edit="'+esc(x.id)+'"', 'top')}</article>`).join('');
     if(q && !r.length) html = notFound('討論串');
     if(!q && !r.length) html = '<div class="empty">還沒有討論串，按左側「新增討論串」建立第一筆。</div>';
   }
@@ -368,30 +463,54 @@ function render(){
   requestAnimationFrame(() => document.querySelectorAll('.body').forEach(b => { const a = b.parentElement.querySelector('.arrow'); if(a) a.hidden = !(b.scrollHeight > b.clientHeight + 2); }));
 }
 
-/* ---------- 通用表單（右上角 X、儲存、取消） ---------- */
-function form({title, cols, v={}, onSave, onDelete, info=''}){
-  $('#form').innerHTML = `<button class="xbtn" type="button" data-close aria-label="關閉">✕</button><h2>${esc(title)}</h2>${info}` + cols.map(([k,l,t,ph])=>{
-    const id='f_'+k;
-    if(t==='area') return `<label for="${id}">${l}</label><textarea class="f" id="${id}" name="${k}" placeholder="${esc(ph)}">${esc(v[k])}</textarea>`;
-    if(t.startsWith('select')) return `<label for="${id}">${l}</label><select class="f" id="${id}" name="${k}">${t.split(':')[1].split(',').map(o=>`<option ${v[k]===o?'selected':''}>${o}</option>`).join('')}</select>`;
-    return `<label for="${id}">${l}</label><input class="f" id="${id}" name="${k}" value="${esc(v[k])}" placeholder="${esc(ph)}">`;
-  }).join('') + `<div class="acts"><button class="btn" value="ok">儲存</button><button class="btn ghost" value="cancel" formnovalidate>取消</button>${onDelete?'<button class="btn danger sp" type="button" id="delBtn">刪除</button>':''}</div>`;
-  const d = $('#dlg'); d.showModal();
-  $('#form').onsubmit = async e => {
-    if(e.submitter?.value !== 'ok') return;
-    const fd = new FormData($('#form')), out = {};
-    cols.forEach(([k]) => out[k] = (fd.get(k)||'').trim());
-    if(!out[cols[0][0]]){ e.preventDefault(); toast('請填寫「' + cols[0][1].split('（')[0] + '」'); return; }
-    await onSave(out);
+/* ---------- 通用表單：必填檢查、寫入成功才關閉 ---------- */
+const optOf = c => !!(c[4] && c[4].opt) || /選填/.test(c[1]);
+const PREV = k => `<div class="tagprev" id="prev_${k}"></div><div id="dupbox_${k}"></div>`;
+function fieldHtml(c, v){
+  const [k, l, t, ph = ''] = c, id = 'f_' + k, opt = optOf(c);
+  const lab = `<label for="${id}">${esc(l)}${opt ? '' : '<span class="req" aria-hidden="true"> *</span>'}</label>`;
+  let ctl;
+  if(t === 'area') ctl = `<textarea class="f" id="${id}" name="${k}" placeholder="${esc(ph)}">${esc(v[k])}</textarea>`;
+  else if(t === 'tagarea') ctl = `<textarea class="f auto" id="${id}" name="${k}" rows="1" autocomplete="off" spellcheck="false" placeholder="${esc(ph)}">${esc(v[k])}</textarea>${PREV(k)}`;
+  else if(t === 'taginput') ctl = `<input class="f" id="${id}" name="${k}" value="${esc(v[k])}" autocomplete="off" spellcheck="false" placeholder="${esc(ph)}">${PREV(k)}`;
+  else if(t === 'chips') ctl = `<div class="tagrow"><div class="chipbox" id="chipbox"></div>${c[4]?.drag ? `<button class="trash" type="button" id="trash" aria-label="垃圾桶：把 TAG 拖曳到這裡即可刪除" title="把 TAG 拖曳到這裡即可刪除">${TRASH}</button>` : ''}</div><input type="hidden" name="${k}" id="${id}" value="${esc(v[k])}">`;
+  else if(t.startsWith('select')) ctl = `<select class="f" id="${id}" name="${k}">${t.split(':')[1].split(',').map(o=>`<option ${v[k]===o?'selected':''}>${o}</option>`).join('')}</select>`;
+  else ctl = `<input class="f" id="${id}" name="${k}" value="${esc(v[k])}" placeholder="${esc(ph)}">`;
+  return `<div class="fld" data-k="${k}">${lab}${ctl}<div class="ferr" id="err_${k}"></div></div>`;
+}
+const curValues = f => Object.fromEntries([...new FormData(f)].map(([k, v]) => [k, String(v)]));
+/* onSave 回傳 true 才會關閉視窗；回傳其他值（失敗、或已切換成別的畫面）則保留視窗與已填內容 */
+function form({title, cols, v={}, onSave, onDelete, info='', back, after}){
+  const d = $('#dlg'), f = $('#form');
+  f.innerHTML = `<button class="xbtn" type="button" data-close aria-label="關閉">✕</button><h2>${esc(title)}</h2>${info}` + cols.map(c => fieldHtml(c, v)).join('') +
+    `<div class="acts"><button class="btn" value="ok" id="saveBtn">儲存</button><button class="btn ghost" value="cancel" formnovalidate>取消</button>${back?'<button class="btn ghost" type="button" id="backBtn">← 返回修改</button>':''}${onDelete?'<button class="btn danger sp" type="button" id="delBtn">刪除</button>':''}</div>`;
+  if(!d.open) d.showModal();
+  f.oninput = e => { const fl = e.target.closest('.fld'); if(fl){ fl.classList.remove('bad'); const er = fl.querySelector('.ferr'); if(er) er.textContent = ''; } };
+  f.onsubmit = async e => {
+    if(e.submitter?.value === 'cancel') return;      // 取消：交給 dialog 原生關閉
+    e.preventDefault();
+    const fd = new FormData(f), out = {}, miss = [];
+    cols.forEach(c => {
+      const k = c[0]; out[k] = (fd.get(k) || '').trim();
+      const bad = !optOf(c) && !out[k], fl = f.querySelector(`.fld[data-k="${k}"]`);
+      fl.classList.toggle('bad', bad); f.querySelector('#err_' + k).textContent = bad ? '此欄位為必填' : '';
+      if(bad) miss.push(c);
+    });
+    if(miss.length){   // 由上而下引導：先帶到第一個沒填的欄位
+      const first = miss[0], el = f.querySelector('#f_' + first[0]);
+      toast(`還有 ${miss.length} 個必填欄位未填，請先填「${first[1].split('（')[0]}」`);
+      el.scrollIntoView({block:'center', behavior:'smooth'}); el.focus({preventScroll:true}); return;
+    }
+    const sb = f.querySelector('#saveBtn'); sb.disabled = true;
+    try{ if(await onSave(out) === true) d.close(); } finally { sb.disabled = false; }
   };
-  const del = $('#delBtn');
-  if(del) del.onclick = async () => { if(confirm('確定刪除這筆資料？')){ d.close(); await onDelete(); } };
+  const del = f.querySelector('#delBtn');
+  if(del) del.onclick = async () => { if(confirm('確定刪除這筆資料？') && await onDelete() !== false) d.close(); };
+  const bk = f.querySelector('#backBtn'); if(bk) bk.onclick = back;
+  if(after) after(f);
+  const first = f.querySelector('.f'); if(first) first.focus({preventScroll:true});
 }
 const rowName = (sheet, r) => sheet==='tags' ? r.tag : sheet==='events' ? r.event + (r.sub ? ' / ' + r.sub : '') : r.title;
-/* ---------- 重複內容處理：同一個 TAG 只保留一筆；重複時提示並合併 ---------- */
-const tkey = t => t.trim().toLowerCase();
-const uniqTags = str => { const seen = new Set(); return split(str).filter(t => { const k = tkey(t); if(seen.has(k)) return false; seen.add(k); return true; }).join(', '); };
-const norm = u => (u || '').trim().toLowerCase().replace(/\/+$/, '');
 const cut = (x, n) => x.length > n ? x.slice(0, n) + '…' : x;
 function ask({title, html, ok='確定', cancel='取消'}){
   return new Promise(res => {
@@ -401,35 +520,84 @@ function ask({title, html, ok='確定', cancel='取消'}){
     d.showModal();
   });
 }
-const entryHtml = x => `<div class="it"><b>${esc(split(x.tag).join(', '))}</b><br>${esc(x.translation)}${x.related ? '<br><span style="color:var(--mute)">話術：' + esc(cut(x.related, 60)) + '</span>' : ''}</div>`;
-const delFn = (sheet, row) => isAdmin() ? async () => { if(await write('delete', sheet, row)){ toast('已刪除'); logS(sheet, '刪除', rowName(sheet, row)); } } : null;
+const delFn = (sheet, row) => isAdmin() ? async () => { const ok = await write('delete', sheet, row); if(ok){ toast('已刪除'); logS(sheet, '刪除', rowName(sheet, row)); } return ok; } : null;
 
-function tagForm(v, row){
-  form({ title: row ? '編輯｜' + MODES.tags.nav : '新增 TAG', cols:F.tags, v, onSave: o => saveTag(o, row, () => tagForm(o, row)), onDelete: row ? delFn('tags', row) : null });
+/* ---------- TAG：重複處理（同一個 TAG 只保留一筆） ---------- */
+const tkey = t => t.trim().toLowerCase();
+const uniqTags = str => { const seen = new Set(); return split(str).filter(t => { const k = tkey(t); if(seen.has(k)) return false; seen.add(k); return true; }).join(', '); };
+const conflicts = (str, excludeIds = []) => { const keys = new Set(split(str).map(tkey)); return data.tags.filter(x => !excludeIds.includes(x.id) && split(x.tag).some(t => keys.has(tkey(t)))); };
+const sharedTags = (str, conf) => [...new Set(split(str).filter(t => conf.some(x => split(x.tag).some(y => tkey(y) === tkey(t)))).map(t => t))];
+const entryHtml = x => `<div class="it"><b>${esc(split(x.tag).join(', '))}</b><br>${esc(x.translation)}${x.related ? '<br><span style="color:var(--mute)">話術：' + esc(cut(x.related, 60)) + '</span>' : ''}</div>`;
+function paintChips(box, tags, drag){
+  box.innerHTML = tags.map(t => `<span class="chip ${drag ? '' : 'ro'}" data-tag="${esc(t)}"${drag ? ` tabindex="0" role="button" aria-label="TAG ${esc(t)}，拖曳到垃圾桶或按 Delete 鍵可刪除"` : ''}>${esc(t)}</span>`).join('') || '<span class="note" style="margin:0">（沒有 TAG）</span>';
 }
-async function saveTag(o, row, reopen){
+/* 輸入 TAG 的欄位：即時拆成小標籤、停頓 0.4 秒比對重複；merge 有值時，提示框會附「合併到原有內容」按鈕 */
+function wireTagInput(f, {id, exclude = () => [], merge = null, grow = false}){
+  const ta = f.querySelector('#f_' + id), prev = f.querySelector('#prev_' + id), box = f.querySelector('#dupbox_' + id);
+  let timer;
+  const fit = () => { if(grow){ ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; } };
+  const paint = () => {
+    const dk = new Set(); conflicts(ta.value, exclude()).forEach(c => split(c.tag).forEach(x => dk.add(tkey(x))));
+    const seen = new Set();
+    prev.innerHTML = split(ta.value).filter(t => !seen.has(tkey(t)) && seen.add(tkey(t)))
+      .map(t => `<span class="chip plain${dk.has(tkey(t)) ? ' dupc' : ''}"${dk.has(tkey(t)) ? ' title="字典裡已有此 TAG"' : ''}>${esc(t)}</span>`).join('');
+  };
+  const check = () => {
+    const conf = conflicts(ta.value, exclude());
+    if(!conf.length){ box.innerHTML = ''; return; }
+    const names = esc(sharedTags(ta.value, conf).join('、'));
+    if(merge){
+      box.innerHTML = `<div class="dup hint" role="alert"><h4>已有相同的 TAG：${names}（${conf.length} 筆）</h4>${conf.map(entryHtml).join('')}<div class="row"><button class="mini go" type="button">合併到原有內容</button></div></div>`;
+      box.querySelector('button').onclick = () => merge(conf);
+    }else{
+      box.innerHTML = `<div class="dup hint" role="alert"><h4>「${names}」已存在於另一筆資料</h4>${conf.map(entryHtml).join('')}<p class="note">同一個 TAG 只能出現在一筆資料中，請先移除再儲存。</p></div>`;
+    }
+  };
+  ta.addEventListener('input', () => {
+    if(grow && /\n/.test(ta.value)) ta.value = ta.value.replace(/\s*\n\s*/g, ', ');
+    fit(); paint(); clearTimeout(timer); timer = setTimeout(check, 400);
+  });
+  if(grow) ta.addEventListener('keydown', e => { if(e.key === 'Enter' && !e.shiftKey && !e.isComposing){ e.preventDefault(); f.requestSubmit(f.querySelector('#saveBtn')); } });
+  fit(); paint(); check();
+}
+/* 新增 TAG */
+function tagNew(v = {}){
+  form({ title:'新增 TAG', cols:F.tags, v, onSave: saveTagNew,
+    after: f => wireTagInput(f, {id:'tag', grow:true, merge: conf => tagMerge({conf, cur:curValues(f), back:() => tagNew(curValues(f))})}) });
+}
+async function saveTagNew(o){
   o.tag = uniqTags(o.tag);
-  const keys = new Set(split(o.tag).map(tkey));
-  const conf = data.tags.filter(x => x.id !== row?.id && split(x.tag).some(t => keys.has(tkey(t))));
-  if(!conf.length){
-    if(await write(row ? 'update' : 'add', 'tags', row ? {...row, ...o} : o)){ toast('已儲存'); logS('tags', row ? '編輯' : '新增', o.tag); }
-    return;
-  }
-  const shared = split(o.tag).filter(t => conf.some(x => split(x.tag).some(y => tkey(y) === tkey(t))));
-  const go = await ask({ title:'已有相同的 TAG', ok:'合併到原有內容', cancel:'返回修改',
-    html:`<p>你輸入的 <b>${esc(shared.join('、'))}</b> 已經在字典裡（${conf.length} 筆）：</p>${conf.map(entryHtml).join('')}<p class="note">同一個 TAG 只保留一筆資訊，避免查到互相矛盾的內容。按「合併」會整理成一筆，你可以先檢視、修改再儲存。</p>` });
-  if(!go){ reopen(); return; }
-  openMerge(row ? {...row, ...o} : conf[0], row ? conf : conf.slice(1), row ? null : o);
+  const conf = conflicts(o.tag);
+  if(conf.length){ toast('這個 TAG 已在字典裡，已帶入合併畫面'); tagMerge({conf, cur:o, back:() => tagNew(o)}); return false; }
+  if(await write('add', 'tags', o)){ toast('已儲存'); logS('tags', '新增', o.tag); return true; }
+  return false;
 }
-function openMerge(base, others, extra){
-  const cands = [base, ...(extra ? [extra] : []), ...others];
-  const uniq = k => [...new Set(cands.map(c => (c[k] || '').trim()).filter(Boolean))];
-  const merged = { tag: uniqTags(cands.map(c => c.tag).join(',')), translation: uniq('translation')[0] || '', related: uniq('related')[0] || '' };
-  const diff = (label, k, n) => uniq(k).length > 1 ? `<p>${label}有 ${uniq(k).length} 種寫法，已先採用第一種，可在下方調整：</p><ul>${uniq(k).map(x => `<li>${esc(cut(x, n))}</li>`).join('')}</ul>` : '';
-  const info = `<div class="cfx"><p>將把 ${1 + others.length} 筆現有資料${extra ? '與你剛輸入的內容' : ''}合併成一筆，所有 TAG 都會保留（共 ${split(merged.tag).length} 個）。</p>${diff('涵義', 'translation', 80)}${diff('回覆話術', 'related', 70)}</div>`;
-  form({ title:'合併相同 TAG', cols:F.tags, v:merged, info, onSave: async o => {
-    o.tag = uniqTags(o.tag);
-    if(await mergeWrite({...base, ...o}, others.map(x => x.id))){ toast('已合併'); logS('tags', '合併', o.tag); } } });
+/* 合併：原有 TAG 唯讀；本次新增的 TAG 另填；多筆重複會合併成一筆 */
+function tagMerge({conf, cur, back}){
+  const base = conf[0], others = conf.slice(1), ids = conf.map(x => x.id);
+  const existing = uniqTags(conf.map(c => c.tag).join(','));
+  const exKeys = new Set(split(existing).map(tkey));
+  const added = cur ? split(cur.tag).filter(t => !exKeys.has(tkey(t))).join(', ') : '';
+  const uniq = k => [...new Set(conf.map(c => (c[k] || '').trim()).filter(Boolean))];
+  const v = { tag:existing, newtag:added, translation:uniq('translation')[0] || '', related:uniq('related')[0] || '' };
+  const notes = [];
+  if(conf.length > 1) notes.push(`${conf.length} 筆現有資料會合併成一筆，所有原有 TAG 都會保留。`);
+  [['translation','涵義',80],['related','回覆話術',70]].forEach(([k, label, n]) => { if(uniq(k).length > 1) notes.push(`${label}有 ${uniq(k).length} 種寫法，已先採用第一種，可在下方調整：<ul>${uniq(k).map(x => `<li>${esc(cut(x, n))}</li>`).join('')}</ul>`); });
+  if(cur){
+    const tt = (cur.translation || '').trim(), rr = (cur.related || '').trim();
+    if(tt && !uniq('translation').includes(tt)) notes.push(`你剛輸入的涵義與原有不同，已先保留原有內容：「${esc(cut(tt, 50))}」，可在下方自行修改。`);
+    if(rr && !uniq('related').includes(rr)) notes.push(`你剛輸入的回覆話術與原有不同，已先保留原有內容：「${esc(cut(rr, 50))}」，可在下方自行修改。`);
+  }
+  const info = `<div class="cfx"><p>原有 TAG 為<b>唯讀</b>，要補充請填在「本次新增的 TAG」。若要刪除原有 TAG，請輸入完整 TAG 找到資料卡，再按卡片右上角的鉛筆編輯。</p>${notes.map(x => `<p class="note">${x}</p>`).join('')}</div>`;
+  form({ title:'合併到原有內容', cols:F.tagsMerge, v, info, back,
+    onSave: async o => {
+      const bad = conflicts(o.newtag, ids);
+      if(bad.length){ toast('「' + sharedTags(o.newtag, bad).join('、') + '」已存在於另一筆資料，請先移除再儲存'); return false; }
+      const tags = uniqTags(o.tag + ',' + o.newtag);
+      if(await mergeWrite({...base, tag:tags, translation:o.translation, related:o.related}, others.map(x => x.id))){ toast('已合併'); logS('tags', '合併', tags); return true; }
+      return false;
+    },
+    after: f => { paintChips(f.querySelector('#chipbox'), split(existing), false); wireTagInput(f, {id:'newtag', exclude:() => ids}); } });
 }
 async function mergeWrite(row, rem){
   if(!GAS_URL){
@@ -439,64 +607,167 @@ async function mergeWrite(row, rem){
   try{ await api('merge', {sheet:'tags', row, remove:rem}); await load(); return true; }
   catch(e){ toast('合併失敗：' + e.message); return false; }
 }
-function threadForm(v, row){
-  form({ title: row ? '編輯｜' + MODES.threads.nav : '新增討論串', cols:F.threads, v, onSave: o => saveThread(o, row, () => threadForm(o, row)), onDelete: row ? delFn('threads', row) : null });
+/* 編輯 TAG：單顆 TAG 按鈕，拖曳到垃圾桶 → 二次確認 → 立即更新 Google Sheet */
+function tagEdit(row0){
+  const st = {row:row0};
+  form({ title:'編輯｜' + MODES.tags.nav, cols:F.tagsEdit, v:{...row0, newtag:''}, onDelete: delFn('tags', row0),
+    onSave: async o => {
+      const tags = uniqTags(o.tag + ',' + o.newtag), bad = conflicts(tags, [st.row.id]);
+      if(bad.length){ toast('「' + sharedTags(tags, bad).join('、') + '」已存在於另一筆資料，請先合併或移除'); return false; }
+      if(await write('update', 'tags', {...st.row, tag:tags, translation:o.translation, related:o.related})){ toast('已儲存'); logS('tags', '編輯', tags); return true; }
+      return false;
+    },
+    after: f => {
+      enableDrag(f, st);
+      wireTagInput(f, {id:'newtag', exclude:() => [st.row.id], merge: conf => {
+        const cur = curValues(f), me = {...st.row, translation:cur.translation, related:cur.related};
+        tagMerge({conf:[me, ...conf], cur:{tag:cur.tag + ',' + cur.newtag, translation:cur.translation, related:cur.related}, back:() => tagEdit(st.row)});
+      }});
+    } });
 }
-async function saveThread(o, row, reopen){
-  const dup = data.threads.find(x => x.id !== row?.id && ((o.url && norm(x.url) === norm(o.url)) || x.title.trim().toLowerCase() === o.title.trim().toLowerCase()));
-  if(!dup){
-    if(await write(row ? 'update' : 'add', 'threads', row ? {...row, ...o} : o)){ toast('已儲存'); logS('threads', row ? '編輯' : '新增', o.title); }
-    return;
-  }
-  if(row){ toast('已有相同標題或連結的討論串：' + dup.title); reopen(); return; }
-  const go = await ask({ title:'已有相同的討論串', ok:'更新原有內容', cancel:'返回修改',
-    html:`<p>「<b>${esc(dup.title)}</b>」（${esc(dup.platform)}｜${esc(dup.mention)}）已經在字典裡。</p><p class="note">按「更新原有內容」會用你剛輸入的內容更新那一筆（關鍵字會合併，空白欄位不會覆蓋），不會多出重複的一筆。</p>` });
-  if(!go){ reopen(); return; }
-  const m = {...dup}; Object.keys(o).forEach(k => { if(o[k]) m[k] = k === 'keywords' ? mergeKw(dup.keywords, o.keywords) : o[k]; });
-  if(await write('update', 'threads', m)){ toast('已更新原有討論串'); logS('threads', '更新重複', m.title); }
+function enableDrag(f, st){
+  const box = f.querySelector('#chipbox'), trash = f.querySelector('#trash'), hid = f.querySelector('#f_tag'), dlg = $('#dlg');
+  let tags = split(st.row.tag), drag = null;
+  const draw = () => { paintChips(box, tags, true); hid.value = tags.join(', '); };
+  const over = e => { const r = trash.getBoundingClientRect(), m = 14; return e.clientX >= r.left - m && e.clientX <= r.right + m && e.clientY >= r.top - m && e.clientY <= r.bottom + m; };
+  const askDel = async t => {
+    if(tags.length <= 1){ toast('至少需保留一個 TAG；要刪除整筆資料請按下方「刪除」'); return; }
+    const go = await ask({ title:'確定刪除這個 TAG？', ok:'確定刪除', cancel:'取消',
+      html:`<p>要從這筆資料刪除 <b>${esc(t)}</b> 嗎？</p><p class="note">按下「確定刪除」後會立即更新 Google Sheet。</p>` });
+    if(!go) return;
+    const next = tags.filter(x => tkey(x) !== tkey(t)), nr = {...st.row, tag:next.join(', ')};
+    if(await write('update', 'tags', nr)){ st.row = nr; tags = next; draw(); toast('已刪除 TAG'); logS('tags', '刪除TAG', t); }
+  };
+  draw();
+  trash.onclick = () => toast('把上方的 TAG 拖曳到這裡即可刪除');
+  box.addEventListener('pointerdown', e => {
+    const c = e.target.closest('.chip[data-tag]'); if(!c || e.button > 0) return;
+    drag = {c, t:c.dataset.tag, x:e.clientX, y:e.clientY, on:false, g:null, id:e.pointerId};
+    try{ c.setPointerCapture(e.pointerId); }catch{}
+  });
+  box.addEventListener('pointermove', e => {
+    if(!drag || e.pointerId !== drag.id) return;
+    if(!drag.on){
+      if(Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < 6) return;
+      drag.on = true; const g = drag.c.cloneNode(true); g.className = 'chip dragghost'; g.removeAttribute('tabindex'); dlg.appendChild(g); drag.g = g; drag.c.style.opacity = .35;
+    }
+    drag.g.style.left = e.clientX + 'px'; drag.g.style.top = e.clientY + 'px';
+    trash.classList.toggle('hot', over(e));
+  });
+  const end = e => {
+    if(!drag || e.pointerId !== drag.id) return;
+    const d0 = drag; drag = null;
+    if(d0.g) d0.g.remove(); d0.c.style.opacity = ''; trash.classList.remove('hot');
+    if(d0.on && e.type === 'pointerup' && over(e)) askDel(d0.t);
+  };
+  box.addEventListener('pointerup', end); box.addEventListener('pointercancel', end);
+  box.addEventListener('keydown', e => { const c = e.target.closest('.chip[data-tag]'); if(c && (e.key === 'Delete' || e.key === 'Backspace')){ e.preventDefault(); askDel(c.dataset.tag); } });
 }
+
+/* ---------- 討論串 ---------- */
+const norm = u => (u || '').trim().toLowerCase().replace(/\/+$/, '');
+const findThreadDup = (o, excludeId) => data.threads.find(x => x.id !== excludeId &&
+  ((norm(o.url) && norm(x.url) === norm(o.url)) || ((o.title || '').trim() && x.title.trim().toLowerCase() === o.title.trim().toLowerCase())));
+const mergeKw = (a, b) => [...new Set([...split(a), ...split(b)])].join(', ');
+/* 新增（target 有值 = 正在更新既有的重複討論串） */
+function threadNew(v = {}, target = null){
+  const st = {target, touched:!!target};
+  form({ title: target ? '更新原有討論串' : '新增討論串', cols:F.threads, v,
+    info: target ? `<div class="cfx"><p>正在更新既有的「<b>${esc(target.title)}</b>」。你沒填的內容會保留原樣，關鍵字維持原有文字，可直接修改。</p></div>` : '',
+    onSave: async o => {
+      const dup = findThreadDup(o, target?.id);
+      if(dup && !target){ toast('已有相同標題或連結的討論串，已帶入更新畫面'); threadFromDup(o, dup); return false; }
+      if(dup){ toast('已有另一筆相同標題或連結的討論串：' + dup.title); return false; }
+      if(target){ if(await write('update', 'threads', {...target, ...o})){ toast('已更新原有討論串'); logS('threads', '更新重複', o.title); return true; } return false; }
+      if(await write('add', 'threads', o)){ toast('已儲存'); logS('threads', '新增', o.title); return true; }
+      return false;
+    },
+    after: f => wireThread(f, st) });
+}
+function threadFromDup(cur, dup){   // 以原有資料為底，帶入使用者剛輸入的內容；關鍵字維持原有
+  const m = {...dup}; ['title','platform','url','note','mention'].forEach(k => { if((cur[k] || '').trim()) m[k] = cur[k]; });
+  threadNew(m, dup);
+}
+function wireThread(f, st){
+  const title = f.querySelector('#f_title'), url = f.querySelector('#f_url'), note = f.querySelector('#f_note'), men = f.querySelector('#f_mention');
+  f.querySelector('.fld[data-k="url"]').insertAdjacentHTML('afterend', '<div id="dupbox_th"></div>');
+  const box = f.querySelector('#dupbox_th'); let timer;
+  const check = () => {
+    const cur = {title:title.value, url:url.value}, dup = findThreadDup(cur, st.target?.id);
+    if(!dup){ box.innerHTML = ''; return; }
+    const by = (norm(cur.url) && norm(dup.url) === norm(cur.url)) ? '連結網址' : '標題';
+    box.innerHTML = `<div class="dup hint" role="alert"><h4>已有相同的${by}</h4><div class="it"><b>${esc(dup.title)}</b><br>${esc(dup.platform)}｜${esc(dup.mention)}｜${esc(cut(emojify(dup.note || ''), 60))}</div>` +
+      (st.target ? '<p class="note">這會和另一筆既有討論串重複，請修改標題或連結。</p>' : '<div class="row"><button class="mini go" type="button">更新原有內容</button></div>') + '</div>';
+    const b = box.querySelector('button'); if(b) b.onclick = () => threadFromDup(curValues(f), dup);
+  };
+  [title, url].forEach(el => el.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(check, 400); }));
+  men.addEventListener('input', () => { st.touched = true; });     // 只有使用者手動輸入才會觸發；之後不再自動覆蓋
+  wireEmoji(note, () => {
+    if(st.touched) return;
+    const r = parseSender(note.value); if(!r) return;
+    const c = note.selectionStart, removed = note.value.length - r.rest.length;
+    men.value = r.mention; men.closest('.fld').classList.remove('bad'); men.closest('.fld').querySelector('.ferr').textContent = '';
+    note.value = r.rest; const p = Math.max(0, c - removed); note.setSelectionRange(p, p);
+  });
+  check();
+}
+/* 編輯（維持原本的欄位與操作） */
+function threadEdit(row){
+  form({ title:'編輯｜' + MODES.threads.nav, cols:F.threadsEdit, v:row, onDelete: delFn('threads', row),
+    onSave: async o => {
+      const dup = findThreadDup(o, row.id);
+      if(dup){ toast('已有相同標題或連結的討論串：' + dup.title); return false; }
+      if(await write('update', 'threads', {...row, ...o})){ toast('已儲存'); logS('threads', '編輯', o.title); return true; }
+      return false;
+    },
+    after: f => wireEmoji(f.querySelector('#f_note')) });
+}
+
+/* ---------- 其他新增／編輯 ---------- */
 function openEdit(sheet, id){
   const row = data[sheet].find(x => x.id === id); if(!row) return;
-  if(sheet === 'tags') return tagForm(row, row);
-  if(sheet === 'threads') return threadForm(row, row);
+  if(sheet === 'tags') return tagEdit(row);
+  if(sheet === 'threads') return threadEdit(row);
   form({ title:'編輯｜' + MODES[sheet].nav, cols:F.evfull, v:row,
-    onSave: async o => { if(await write('update', sheet, {...row, ...o})){ toast('已儲存'); logS(sheet, '編輯', rowName(sheet, o)); } },
+    onSave: async o => { if(await write('update', sheet, {...row, ...o})){ toast('已儲存'); logS(sheet, '編輯', rowName(sheet, o)); return true; } return false; },
     onDelete: delFn(sheet, row) });
 }
 function openNew(q=''){
-  if(mode==='tags') tagForm({tag:q}, null);
+  if(mode==='tags') tagNew({tag:q});
   else if(mode==='events') form({ title:'新增 Event', cols:F.evnew, v:/\./.test(q)?{event:q}:{keywords:q}, onSave: async o => {
     const same = Object.keys(evGroups()).find(x => x.toLowerCase() === o.event.toLowerCase());
     if(same){
       if(await ask({ title:'已有相同的 Event', ok:'查看原有 Event', cancel:'返回',
-        html:`<p><b>${esc(same)}</b> 已經在字典裡。建議直接查看它，並用「＋新增欄位」或「＋新增關鍵字」補充資訊。</p>` })){ $('#q').value=''; openEvent(same); }
-      return;
+        html:`<p><b>${esc(same)}</b> 已經在字典裡。建議直接查看它，並用「＋新增欄位」或「＋新增關鍵字」補充資訊。</p>` })){ $('#q').value=''; openEvent(same); return true; }
+      return false;
     }
-    if(await write('add','events',{event:o.event, sub:'', info:o.info, keywords:o.keywords, category:o.category, note:o.note})){ toast('已儲存'); logS('events','新增',o.event); selEvent=o.event; $('#q').value=''; render(); } } });
-  else threadForm({keywords:q}, null);
+    if(await write('add','events',{event:o.event, sub:'', info:o.info, keywords:o.keywords, category:o.category, note:o.note})){ toast('已儲存'); logS('events','新增',o.event); selEvent=o.event; $('#q').value=''; render(); return true; }
+    return false; } });
+  else threadNew({keywords:q});
 }
-const mergeKw = (a, b) => [...new Set([...split(a), ...split(b)])].join(', ');
 function addKwEvent(name){
   const head = evGroups()[name]?.head;
   form({ title:'新增關鍵字｜' + name, cols:F.kw, onSave: async o => {
     const ok = head ? await write('update','events',{...head, keywords:mergeKw(head.keywords,o.keywords)}) : await write('add','events',{event:name, sub:'', info:'', keywords:o.keywords});
-    if(ok){ toast('已新增關鍵字'); logS('events','新增關鍵字',name); } } });
+    if(ok){ toast('已新增關鍵字'); logS('events','新增關鍵字',name); } return ok; } });
 }
 function addKwThread(id){
   const row = data.threads.find(x=>x.id===id); if(!row) return;
   form({ title:'新增關鍵字｜' + row.title, cols:F.kw, onSave: async o => {
-    if(await write('update','threads',{...row, keywords:mergeKw(row.keywords,o.keywords)})){ toast('已新增關鍵字'); logS('threads','新增關鍵字',row.title); } } });
+    const ok = await write('update','threads',{...row, keywords:mergeKw(row.keywords,o.keywords)});
+    if(ok){ toast('已新增關鍵字'); logS('threads','新增關鍵字',row.title); } return ok; } });
 }
 function addSub(name){
   form({ title:'新增欄位｜' + name, cols:F.evsub, onSave: async o => {
     const old = evGroups()[name]?.subs.find(x => x.sub.trim().toLowerCase() === o.sub.toLowerCase());
     if(old){
       if(!await ask({ title:'已有相同的欄位', ok:'更新說明', cancel:'返回',
-        html:`<p><b>${esc(old.sub)}</b> 已經在 ${esc(name)} 裡：</p><div class="it">${esc(old.info) || '（尚無說明）'}</div><p class="note">按「更新說明」會把說明改成你剛輸入的內容：${esc(o.info) || '（空白，將保留原說明）'}</p>` })) return;
-      if(await write('update','events',{...old, info:o.info || old.info})){ toast('已更新欄位說明'); logS('events','更新欄位',name + ' / ' + o.sub); }
-      return;
+        html:`<p><b>${esc(old.sub)}</b> 已經在 ${esc(name)} 裡：</p><div class="it">${esc(old.info) || '（尚無說明）'}</div><p class="note">按「更新說明」會把說明改成你剛輸入的內容：${esc(o.info)}</p>` })) return false;
+      const ok = await write('update','events',{...old, info:o.info});
+      if(ok){ toast('已更新欄位說明'); logS('events','更新欄位',name + ' / ' + o.sub); } return ok;
     }
-    if(await write('add','events',{event:name, sub:o.sub, info:o.info, keywords:''})){ toast('已新增欄位'); logS('events','新增欄位',name + ' / ' + o.sub); } } });
+    const ok = await write('add','events',{event:name, sub:o.sub, info:o.info, keywords:''});
+    if(ok){ toast('已新增欄位'); logS('events','新增欄位',name + ' / ' + o.sub); } return ok; } });
 }
 function openEvent(name){
   selEvent = name; logS('events','查看Event',name);
@@ -541,8 +812,8 @@ function drawDups(){
     const k = {}; c.forEach(r => [...new Set(split(r.tag).map(tkey))].forEach(t => k[t] = (k[t] || 0) + 1));
     return `<div class="dup"><h4>TAG 重複：${esc(Object.keys(k).filter(t => k[t] > 1).join('、'))}（${c.length} 筆）</h4>${c.map(entryHtml).join('')}<div class="row"><button class="mini go" data-merge="${i}">合併這組</button></div></div>`;
   }).join('');
-  html += grp(data.events, r => (r.event + '|' + r.sub).toLowerCase()).map(g => `<div class="dup"><h4>Event 重複：${esc(g[0].event)}${g[0].sub ? ' / ' + esc(g[0].sub) : '（Event 本身）'}（${g.length} 筆）</h4>${g.map(r => `<div class="it">${esc(r.info) || '（無說明）'} <button class="mini sm" data-dedit="events:${r.id}">編輯</button></div>`).join('')}</div>`).join('');
-  html += grp(data.threads, r => norm(r.url) || r.title.trim().toLowerCase()).map(g => `<div class="dup"><h4>討論串重複：${esc(g[0].title)}（${g.length} 筆）</h4>${g.map(r => `<div class="it">${esc(r.platform)}｜${esc(r.mention)}｜${esc(cut(r.note || '', 40))} <button class="mini sm" data-dedit="threads:${r.id}">編輯</button></div>`).join('')}</div>`).join('');
+  html += grp(data.events, r => (r.event + '|' + r.sub).toLowerCase()).map(g => `<div class="dup"><h4>Event 重複：${esc(g[0].event)}${g[0].sub ? ' / ' + esc(g[0].sub) : '（Event 本身）'}（${g.length} 筆）</h4>${g.map(r => `<div class="it">${esc(r.info) || '（無說明）'} ${penBtn('data-dedit="events:'+esc(r.id)+'"', 'sm')}</div>`).join('')}</div>`).join('');
+  html += grp(data.threads, r => norm(r.url) || r.title.trim().toLowerCase()).map(g => `<div class="dup"><h4>討論串重複：${esc(g[0].title)}（${g.length} 筆）</h4>${g.map(r => `<div class="it">${esc(r.platform)}｜${esc(r.mention)}｜${esc(cut(r.note || '', 40))} ${penBtn('data-dedit="threads:'+esc(r.id)+'"', 'sm')}</div>`).join('')}</div>`).join('');
   $('#admBody').innerHTML = `<p class="note" style="margin:0">同一個 TAG 只應出現在一筆資料中。這裡列出重複的 TAG、Event（含欄位）與討論串；TAG 可一鍵合併，其他請編輯或刪除較舊的一筆。</p>` + (html || '<div class="empty">目前沒有重複資料 🎉</div>');
 }
 function fillTbl(){
@@ -553,7 +824,7 @@ function fillTbl(){
   }else{
     const cols = {tags:['tag','translation','related'], events:['event','sub','info','keywords','category','note'], threads:['title','platform','mention','keywords','url']}[admSheet];
     const r = (data[admSheet]||[]).filter(x => !q || fuzzy(q, cols.map(c => [x[c], 0])) >= 0);
-    t.innerHTML = `<table class="tbl"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}<th></th></tr></thead><tbody>${r.map(x=>`<tr>${cols.map(c=>`<td class="cl" title="${esc(x[c])}">${esc(x[c])}</td>`).join('')}<td><button class="mini" data-aedit="${x.id}">編輯</button></td></tr>`).join('') || `<tr><td colspan="${cols.length+1}">沒有資料</td></tr>`}</tbody></table>`;
+    t.innerHTML = `<table class="tbl"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}<th></th></tr></thead><tbody>${r.map(x=>`<tr>${cols.map(c=>`<td class="cl" title="${esc(x[c])}">${esc(x[c])}</td>`).join('')}<td>${penBtn('data-aedit="'+esc(x.id)+'"', 'sm')}</td></tr>`).join('') || `<tr><td colspan="${cols.length+1}">沒有資料</td></tr>`}</tbody></table>`;
   }
 }
 async function adminOp(op, target, extra){
@@ -579,7 +850,7 @@ document.addEventListener('click', e => {
   else if(d.close !== undefined) t.closest('dialog').close();
   else if(d.at){ admTab = d.at; renderAdm(); }
   else if(d.aedit) openEdit(admSheet, d.aedit);
-  else if(d.merge !== undefined){ const c = admClusters[+d.merge]; if(c) openMerge(c[0], c.slice(1), null); }
+  else if(d.merge !== undefined){ const c = admClusters[+d.merge]; if(c) tagMerge({conf:c, cur:null, back:null}); }
   else if(d.dedit){ const [sh, id] = d.dedit.split(':'); openEdit(sh, id); }
   else if(d.refresh !== undefined) renderAdm();
   else if(d.padd !== undefined){ const em = $('#pEmail').value.trim().toLowerCase(); const msg = checkEmail(em); if(msg){ toast(msg); return; } adminOp('admin_add', em, {role:$('#pRole').value}); }
@@ -625,6 +896,8 @@ function initGate(){
   };
   inp.addEventListener('input', () => err.textContent = '');
 }
+$('#ver').textContent = APP + ' ' + VERSION;
+console.info(APP, VERSION);
 paintChrome(); render(); initGate();
 </script>
 </body>
