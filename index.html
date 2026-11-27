@@ -1,493 +1,486 @@
-{\rtf1\ansi\ansicpg950\cocoartf2822
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
-{\colortbl;\red255\green255\blue255;}
-{\*\expandedcolortbl;;}
-\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CS客服部門通用詞典</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Noto+Sans+TC:wght@400;500;700&family=Playfair+Display:wght@700;800&family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f8ecdf; --panel:#fbf2e8; --ink:#1b1714; --mute:#8a7c70; --line:#efdcc9;
+  --o1:#ffb480; --o2:#f58f5b; --o3:#e8764a; --hi:#fffaf4; --sh:rgba(222,150,100,.28);
+  --paper:#fffdf9; --paperink:#141210;
+  --raise:8px 8px 22px var(--sh),-6px -6px 16px rgba(255,255,255,.85);
+  --inset:inset 3px 3px 8px rgba(222,150,100,.22),inset -3px -3px 8px rgba(255,255,255,.9);
+  --font:'Montserrat','Noto Sans TC',system-ui,sans-serif;
+  --serif:'Playfair Display','Noto Serif TC',Georgia,serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#241b15; --panel:#2d231b; --ink:#f7eadc; --mute:#b09d8c; --line:#43342a; --hi:#35291f; --sh:rgba(0,0,0,.45);
+  --paper:#382c21; --paperink:#f7eadc;
+  --raise:8px 8px 22px rgba(0,0,0,.45),-6px -6px 16px rgba(255,255,255,.04);
+  --inset:inset 3px 3px 8px rgba(0,0,0,.4),inset -3px -3px 8px rgba(255,255,255,.04);}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:100vh;padding:28px 20px 60px;
+  background-image:radial-gradient(circle at 8% 8%,rgba(255,200,160,.55) 0,transparent 22%),radial-gradient(circle at 92% 92%,rgba(245,143,91,.28) 0,transparent 30%)}
+.shell{max-width:1120px;margin:0 auto;background:var(--panel);border-radius:44px;box-shadow:var(--raise);padding:26px 38px 40px;position:relative;overflow:hidden;transition:opacity .6s}
+body.locked .shell{opacity:0;pointer-events:none}
+.blob{position:absolute;right:-120px;top:120px;width:520px;height:520px;border-radius:46% 54% 50% 50%;background:linear-gradient(145deg,var(--o1),var(--o2));opacity:.16;pointer-events:none}
+header{display:flex;align-items:center;gap:18px;flex-wrap:wrap;position:relative}
+.logo{font-weight:800;font-size:15px;letter-spacing:.02em;border:1.5px solid var(--ink);border-radius:999px;padding:9px 20px}
+nav{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap}
+nav button{font:inherit;font-size:13px;font-weight:700;color:var(--ink);background:none;border:0;padding:10px 18px;border-radius:999px;cursor:pointer}
+nav button[aria-selected=true]{background:linear-gradient(135deg,var(--o1),var(--o2));color:#fff;box-shadow:0 6px 14px var(--sh)}
+nav button:not([aria-selected=true]):hover{box-shadow:var(--inset)}
+.icon,.xbtn{width:42px;height:42px;border-radius:50%;border:0;background:var(--panel);box-shadow:var(--raise);cursor:pointer;font-size:17px;color:var(--ink)}
+.icon:active,.xbtn:active{box-shadow:var(--inset)}
+.icon[hidden]{display:none}
+.xbtn{position:absolute;top:18px;right:20px;width:36px;height:36px;font-size:14px}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2.5px solid var(--o3);outline-offset:2px}
+main{display:grid;grid-template-columns:minmax(260px,360px) 1fr;gap:42px;margin-top:44px;position:relative}
+.hero{position:sticky;top:24px;align-self:start}
+h1{font-size:44px;line-height:1.1;margin:0 0 14px;font-weight:800;letter-spacing:-.01em}
+.sub{color:var(--mute);font-size:14px;line-height:1.7;margin:0 0 26px;max-width:34ch}
+.search{display:flex;align-items:center;gap:10px;background:var(--panel);border-radius:999px;box-shadow:var(--inset);padding:6px 8px 6px 20px}
+.search input{flex:1;min-width:0;border:0;background:none;font:inherit;font-size:15px;color:var(--ink);padding:10px 0}
+.search input:focus-visible{outline:none}
+.search:focus-within{outline:2.5px solid var(--o3);outline-offset:2px}
+.btn{font:inherit;font-size:13px;font-weight:700;color:#fff;border:0;border-radius:999px;padding:13px 26px;cursor:pointer;background:linear-gradient(135deg,var(--o1),var(--o2));box-shadow:0 8px 18px var(--sh)}
+.btn:active{transform:translateY(1px)}
+.btn.ghost{background:var(--panel);color:var(--ink);box-shadow:var(--raise)}
+.btn.danger{background:none;color:#c2452b;box-shadow:none;padding-left:0}
+.hero .btn{margin-top:22px}
+.stat{margin-top:22px;font-size:12.5px;color:var(--mute);display:flex;gap:8px;align-items:center}
+.dot{width:9px;height:9px;border-radius:50%;background:#9ad07a}.dot.off{background:var(--o2)}
+.list{display:flex;flex-direction:column;gap:20px;min-width:0}
+.card{background:var(--panel);border-radius:28px;box-shadow:var(--raise);padding:24px 28px}
+.card h3{margin:0 0 4px;font-size:17px;line-height:1.4;word-break:break-word}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
+.chip{font:inherit;font-size:12.5px;font-weight:700;border:0;cursor:pointer;color:var(--o3);background:var(--hi);box-shadow:var(--inset);border-radius:999px;padding:6px 14px}
+.chip.plain{cursor:default;color:var(--mute)}
+.mean{font-size:15.5px;font-weight:700;line-height:1.6;margin:0 0 12px}
+.reply{background:var(--hi);box-shadow:var(--inset);border-radius:18px;padding:16px 18px;font-size:14px;line-height:1.8;white-space:pre-wrap;word-break:break-word}
+.row{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap}
+.mini{font:inherit;font-size:12.5px;font-weight:700;color:var(--ink);background:var(--panel);border:0;border-radius:999px;padding:8px 16px;cursor:pointer;box-shadow:var(--raise);display:inline-block}
+.mini:active{box-shadow:var(--inset)}
+.mini.go{background:linear-gradient(135deg,var(--o1),var(--o2));color:#fff;box-shadow:0 6px 14px var(--sh)}
+.sp{margin-left:auto}
+.note{color:var(--mute);font-size:13.5px;line-height:1.7;margin:8px 0 0}
+.kwline{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13.5px;color:var(--mute);margin:2px 0 12px}
+.kwline i{font-style:italic}
+.mini.sm{padding:5px 12px;font-size:12px;box-shadow:var(--inset);background:var(--hi)}
+.bodywrap{display:flex;gap:10px;align-items:flex-start}
+.body{flex:1;min-width:0;font-size:14px;line-height:1.8;white-space:pre-wrap;word-break:break-word;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.body.open{display:block}
+.body a{color:var(--o3);font-weight:700}
+.arrow{flex:none;width:30px;height:30px;border-radius:50%;border:0;background:var(--panel);box-shadow:var(--raise);cursor:pointer;color:var(--ink);font-size:13px;transition:transform .2s}
+.arrow[hidden]{display:none}.arrow.up{transform:rotate(180deg)}
+.erow{display:block;width:100%;text-align:left;font:inherit;font-size:14.5px;color:var(--ink);background:var(--panel);border:0;border-radius:22px;box-shadow:var(--raise);padding:17px 24px;cursor:pointer;line-height:1.6;word-break:break-word}
+.erow b{font-family:'Montserrat',ui-monospace,monospace;color:var(--o3)}
+.erow:active{box-shadow:var(--inset)}
+.paper{background:var(--paper);color:var(--paperink);border-radius:28px;box-shadow:var(--raise);padding:36px 38px 30px;font-family:'Noto Serif TC','Playfair Display',serif}
+.paper h2{font-family:var(--serif);font-size:44px;font-weight:800;line-height:1.1;margin:0 0 14px;letter-spacing:-.015em;word-break:break-all;cursor:pointer}
+.paper .kw{font-size:14px;font-style:italic;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.paper hr{border:0;border-top:1.5px solid currentColor;margin:20px 0 14px;opacity:.85}
+.paper .line{font-size:14.5px;line-height:2}
+.paper .k{font:inherit;font-weight:700;background:none;border:0;padding:0;color:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:4px}
+.paper .mini{font-family:var(--font);font-style:normal}
+.linkbtn{font:inherit;font-weight:700;color:var(--o3);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.empty{text-align:center;color:var(--mute);padding:50px 10px;font-size:14px;line-height:1.8}
+dialog{border:0;border-radius:32px;background:var(--panel);color:var(--ink);box-shadow:0 30px 80px rgba(120,60,20,.35);padding:30px 32px;width:min(560px,92vw);font-family:var(--font);position:relative}
+dialog#adm{width:min(940px,96vw)}
+dialog::backdrop{background:rgba(60,30,10,.4);backdrop-filter:blur(3px)}
+dialog h2{margin:0 0 18px;font-size:20px;padding-right:44px}
+label{display:block;font-size:12.5px;font-weight:700;color:var(--mute);margin:14px 0 6px}
+input.f,textarea.f,select.f{width:100%;font:inherit;font-size:14.5px;color:var(--ink);background:var(--panel);border:0;border-radius:16px;box-shadow:var(--inset);padding:12px 16px}
+textarea.f{min-height:120px;resize:vertical;line-height:1.7}
+.acts{display:flex;gap:12px;margin-top:24px;align-items:center}
+.tabs{display:flex;gap:6px;margin:0 0 18px;flex-wrap:wrap}
+.tabs button{font:inherit;font-size:13px;font-weight:700;color:var(--ink);background:none;border:0;padding:9px 18px;border-radius:999px;cursor:pointer}
+.tabs button[aria-selected=true]{background:linear-gradient(135deg,var(--o1),var(--o2));color:#fff}
+.tblwrap{overflow:auto;max-height:52vh;border-radius:18px;background:var(--hi);box-shadow:var(--inset);margin-top:14px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th,.tbl td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{position:sticky;top:0;background:var(--hi);font-size:12px;color:var(--mute)}
+.tbl .cl{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.bar .f{flex:1;min-width:160px}
+.toast{position:fixed;left:50%;bottom:30px;transform:translate(-50%,30px);background:var(--ink);color:var(--bg);padding:12px 22px;border-radius:999px;font-size:13.5px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:99}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+#gate{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;background:rgba(248,236,223,.6);backdrop-filter:blur(14px);transition:opacity .5s}
+#gate.out{opacity:0;pointer-events:none}
+.gcard{background:var(--panel);border-radius:36px;box-shadow:var(--raise);padding:36px 34px 32px;width:min(440px,94vw)}
+.gcard h2{margin:0 0 10px;font-size:26px}
+.gcard .sub{margin-bottom:8px}
+.err{color:#c2452b;font-size:13px;line-height:1.6;min-height:22px;margin:10px 4px 0}
+@media(prefers-color-scheme:dark){#gate{background:rgba(36,27,21,.65)}.err{color:#ff9a7a}}
+@media(max-width:860px){.shell{padding:20px 18px 30px;border-radius:32px}main{grid-template-columns:1fr;gap:28px}.hero{position:static}h1{font-size:34px}nav{margin-left:0;width:100%}.paper{padding:26px 22px}.paper h2{font-size:32px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="gate" role="dialog" aria-modal="true" aria-labelledby="gt">
+  <form class="gcard" id="gateForm" novalidate>
+    <div class="logo" style="display:inline-block;margin-bottom:22px">CS客服部門通用詞典</div>
+    <h2 id="gt">先驗證公司信箱</h2>
+    <p class="sub">請輸入公司 Email 後進入。</p>
+    <label for="gEmail">公司 Email</label>
+    <input class="f" id="gEmail" type="email" inputmode="email" autocomplete="email" placeholder="fin.chang@swag.live" required>
+    <div class="err" id="gErr" role="alert"></div>
+    <div class="acts"><button class="btn">進入字典</button></div>
+  </form>
+</div>
 
-\f0\fs24 \cf0 <!DOCTYPE html>\
-<html lang="zh-Hant">\
-<head>\
-<meta charset="UTF-8">\
-<meta name="viewport" content="width=device-width, initial-scale=1">\
-<title>CS\uc0\u23458 \u26381 \u37096 \u38272 \u36890 \u29992 \u35422 \u20856 </title>\
-<link rel="preconnect" href="https://fonts.googleapis.com">\
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700;800&family=Noto+Sans+TC:wght@400;500;700&family=Playfair+Display:wght@700;800&family=Noto+Serif+TC:wght@400;700&display=swap" rel="stylesheet">\
-<style>\
-:root\{\
-  --bg:#f8ecdf; --panel:#fbf2e8; --ink:#1b1714; --mute:#8a7c70; --line:#efdcc9;\
-  --o1:#ffb480; --o2:#f58f5b; --o3:#e8764a; --hi:#fffaf4; --sh:rgba(222,150,100,.28);\
-  --paper:#fffdf9; --paperink:#141210;\
-  --raise:8px 8px 22px var(--sh),-6px -6px 16px rgba(255,255,255,.85);\
-  --inset:inset 3px 3px 8px rgba(222,150,100,.22),inset -3px -3px 8px rgba(255,255,255,.9);\
-  --font:'Montserrat','Noto Sans TC',system-ui,sans-serif;\
-  --serif:'Playfair Display','Noto Serif TC',Georgia,serif;\
-\}\
-@media (prefers-color-scheme:dark)\{:root\{\
-  --bg:#241b15; --panel:#2d231b; --ink:#f7eadc; --mute:#b09d8c; --line:#43342a; --hi:#35291f; --sh:rgba(0,0,0,.45);\
-  --paper:#382c21; --paperink:#f7eadc;\
-  --raise:8px 8px 22px rgba(0,0,0,.45),-6px -6px 16px rgba(255,255,255,.04);\
-  --inset:inset 3px 3px 8px rgba(0,0,0,.4),inset -3px -3px 8px rgba(255,255,255,.04);\}\}\
-*\{box-sizing:border-box\}\
-html,body\{margin:0\}\
-body\{font-family:var(--font);color:var(--ink);background:var(--bg);min-height:100vh;padding:28px 20px 60px;\
-  background-image:radial-gradient(circle at 8% 8%,rgba(255,200,160,.55) 0,transparent 22%),radial-gradient(circle at 92% 92%,rgba(245,143,91,.28) 0,transparent 30%)\}\
-.shell\{max-width:1120px;margin:0 auto;background:var(--panel);border-radius:44px;box-shadow:var(--raise);padding:26px 38px 40px;position:relative;overflow:hidden;transition:opacity .6s\}\
-body.locked .shell\{opacity:0;pointer-events:none\}\
-.blob\{position:absolute;right:-120px;top:120px;width:520px;height:520px;border-radius:46% 54% 50% 50%;background:linear-gradient(145deg,var(--o1),var(--o2));opacity:.16;pointer-events:none\}\
-header\{display:flex;align-items:center;gap:18px;flex-wrap:wrap;position:relative\}\
-.logo\{font-weight:800;font-size:15px;letter-spacing:.02em;border:1.5px solid var(--ink);border-radius:999px;padding:9px 20px\}\
-nav\{display:flex;gap:6px;margin-left:auto;flex-wrap:wrap\}\
-nav button\{font:inherit;font-size:13px;font-weight:700;color:var(--ink);background:none;border:0;padding:10px 18px;border-radius:999px;cursor:pointer\}\
-nav button[aria-selected=true]\{background:linear-gradient(135deg,var(--o1),var(--o2));color:#fff;box-shadow:0 6px 14px var(--sh)\}\
-nav button:not([aria-selected=true]):hover\{box-shadow:var(--inset)\}\
-.icon,.xbtn\{width:42px;height:42px;border-radius:50%;border:0;background:var(--panel);box-shadow:var(--raise);cursor:pointer;font-size:17px;color:var(--ink)\}\
-.icon:active,.xbtn:active\{box-shadow:var(--inset)\}\
-.icon[hidden]\{display:none\}\
-.xbtn\{position:absolute;top:18px;right:20px;width:36px;height:36px;font-size:14px\}\
-button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible\{outline:2.5px solid var(--o3);outline-offset:2px\}\
-main\{display:grid;grid-template-columns:minmax(260px,360px) 1fr;gap:42px;margin-top:44px;position:relative\}\
-.hero\{position:sticky;top:24px;align-self:start\}\
-h1\{font-size:44px;line-height:1.1;margin:0 0 14px;font-weight:800;letter-spacing:-.01em\}\
-.sub\{color:var(--mute);font-size:14px;line-height:1.7;margin:0 0 26px;max-width:34ch\}\
-.search\{display:flex;align-items:center;gap:10px;background:var(--panel);border-radius:999px;box-shadow:var(--inset);padding:6px 8px 6px 20px\}\
-.search input\{flex:1;min-width:0;border:0;background:none;font:inherit;font-size:15px;color:var(--ink);padding:10px 0\}\
-.search input:focus-visible\{outline:none\}\
-.search:focus-within\{outline:2.5px solid var(--o3);outline-offset:2px\}\
-.btn\{font:inherit;font-size:13px;font-weight:700;color:#fff;border:0;border-radius:999px;padding:13px 26px;cursor:pointer;background:linear-gradient(135deg,var(--o1),var(--o2));box-shadow:0 8px 18px var(--sh)\}\
-.btn:active\{transform:translateY(1px)\}\
-.btn.ghost\{background:var(--panel);color:var(--ink);box-shadow:var(--raise)\}\
-.btn.danger\{background:none;color:#c2452b;box-shadow:none;padding-left:0\}\
-.hero .btn\{margin-top:22px\}\
-.stat\{margin-top:22px;font-size:12.5px;color:var(--mute);display:flex;gap:8px;align-items:center\}\
-.dot\{width:9px;height:9px;border-radius:50%;background:#9ad07a\}.dot.off\{background:var(--o2)\}\
-.list\{display:flex;flex-direction:column;gap:20px;min-width:0\}\
-.card\{background:var(--panel);border-radius:28px;box-shadow:var(--raise);padding:24px 28px\}\
-.card h3\{margin:0 0 4px;font-size:17px;line-height:1.4;word-break:break-word\}\
-.chips\{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center\}\
-.chip\{font:inherit;font-size:12.5px;font-weight:700;border:0;cursor:pointer;color:var(--o3);background:var(--hi);box-shadow:var(--inset);border-radius:999px;padding:6px 14px\}\
-.chip.plain\{cursor:default;color:var(--mute)\}\
-.mean\{font-size:15.5px;font-weight:700;line-height:1.6;margin:0 0 12px\}\
-.reply\{background:var(--hi);box-shadow:var(--inset);border-radius:18px;padding:16px 18px;font-size:14px;line-height:1.8;white-space:pre-wrap;word-break:break-word\}\
-.row\{display:flex;gap:10px;align-items:center;margin-top:14px;flex-wrap:wrap\}\
-.mini\{font:inherit;font-size:12.5px;font-weight:700;color:var(--ink);background:var(--panel);border:0;border-radius:999px;padding:8px 16px;cursor:pointer;box-shadow:var(--raise);display:inline-block\}\
-.mini:active\{box-shadow:var(--inset)\}\
-.mini.go\{background:linear-gradient(135deg,var(--o1),var(--o2));color:#fff;box-shadow:0 6px 14px var(--sh)\}\
-.sp\{margin-left:auto\}\
-.note\{color:var(--mute);font-size:13.5px;line-height:1.7;margin:8px 0 0\}\
-.kwline\{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13.5px;color:var(--mute);margin:2px 0 12px\}\
-.kwline i\{font-style:italic\}\
-.mini.sm\{padding:5px 12px;font-size:12px;box-shadow:var(--inset);background:var(--hi)\}\
-.bodywrap\{display:flex;gap:10px;align-items:flex-start\}\
-.body\{flex:1;min-width:0;font-size:14px;line-height:1.8;white-space:pre-wrap;word-break:break-word;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden\}\
-.body.open\{display:block\}\
-.body a\{color:var(--o3);font-weight:700\}\
-.arrow\{flex:none;width:30px;height:30px;border-radius:50%;border:0;background:var(--panel);box-shadow:var(--raise);cursor:pointer;color:var(--ink);font-size:13px;transition:transform .2s\}\
-.arrow[hidden]\{display:none\}.arrow.up\{transform:rotate(180deg)\}\
-.erow\{display:block;width:100%;text-align:left;font:inherit;font-size:14.5px;color:var(--ink);background:var(--panel);border:0;border-radius:22px;box-shadow:var(--raise);padding:17px 24px;cursor:pointer;line-height:1.6;word-break:break-word\}\
-.erow b\{font-family:'Montserrat',ui-monospace,monospace;color:var(--o3)\}\
-.erow:active\{box-shadow:var(--inset)\}\
-.paper\{background:var(--paper);color:var(--paperink);border-radius:28px;box-shadow:var(--raise);padding:36px 38px 30px;font-family:'Noto Serif TC','Playfair Display',serif\}\
-.paper h2\{font-family:var(--serif);font-size:44px;font-weight:800;line-height:1.1;margin:0 0 14px;letter-spacing:-.015em;word-break:break-all;cursor:pointer\}\
-.paper .kw\{font-size:14px;font-style:italic;display:flex;gap:12px;align-items:center;flex-wrap:wrap\}\
-.paper hr\{border:0;border-top:1.5px solid currentColor;margin:20px 0 14px;opacity:.85\}\
-.paper .line\{font-size:14.5px;line-height:2\}\
-.paper .k\{font:inherit;font-weight:700;background:none;border:0;padding:0;color:inherit;cursor:pointer;text-decoration:underline dotted;text-underline-offset:4px\}\
-.paper .mini\{font-family:var(--font);font-style:normal\}\
-.linkbtn\{font:inherit;font-weight:700;color:var(--o3);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px\}\
-.empty\{text-align:center;color:var(--mute);padding:50px 10px;font-size:14px;line-height:1.8\}\
-dialog\{border:0;border-radius:32px;background:var(--panel);color:var(--ink);box-shadow:0 30px 80px rgba(120,60,20,.35);padding:30px 32px;width:min(560px,92vw);font-family:var(--font);position:relative\}\
-dialog#adm\{width:min(940px,96vw)\}\
-dialog::backdrop\{background:rgba(60,30,10,.4);backdrop-filter:blur(3px)\}\
-dialog h2\{margin:0 0 18px;font-size:20px;padding-right:44px\}\
-label\{display:block;font-size:12.5px;font-weight:700;color:var(--mute);margin:14px 0 6px\}\
-input.f,textarea.f,select.f\{width:100%;font:inherit;font-size:14.5px;color:var(--ink);background:var(--panel);border:0;border-radius:16px;box-shadow:var(--inset);padding:12px 16px\}\
-textarea.f\{min-height:120px;resize:vertical;line-height:1.7\}\
-.acts\{display:flex;gap:12px;margin-top:24px;align-items:center\}\
-.tabs\{display:flex;gap:6px;margin:0 0 18px;flex-wrap:wrap\}\
-.tabs button\{font:inherit;font-size:13px;font-weight:700;color:var(--ink);background:none;border:0;padding:9px 18px;border-radius:999px;cursor:pointer\}\
-.tabs button[aria-selected=true]\{background:linear-gradient(135deg,var(--o1),var(--o2));color:#fff\}\
-.tblwrap\{overflow:auto;max-height:52vh;border-radius:18px;background:var(--hi);box-shadow:var(--inset);margin-top:14px\}\
-.tbl\{width:100%;border-collapse:collapse;font-size:13px\}\
-.tbl th,.tbl td\{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top\}\
-.tbl th\{position:sticky;top:0;background:var(--hi);font-size:12px;color:var(--mute)\}\
-.tbl .cl\{max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap\}\
-.bar\{display:flex;gap:10px;flex-wrap:wrap;align-items:center\}\
-.bar .f\{flex:1;min-width:160px\}\
-.toast\{position:fixed;left:50%;bottom:30px;transform:translate(-50%,30px);background:var(--ink);color:var(--bg);padding:12px 22px;border-radius:999px;font-size:13.5px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:99\}\
-.toast.show\{opacity:1;transform:translate(-50%,0)\}\
-#gate\{position:fixed;inset:0;z-index:50;display:grid;place-items:center;padding:20px;background:rgba(248,236,223,.6);backdrop-filter:blur(14px);transition:opacity .5s\}\
-#gate.out\{opacity:0;pointer-events:none\}\
-.gcard\{background:var(--panel);border-radius:36px;box-shadow:var(--raise);padding:36px 34px 32px;width:min(440px,94vw)\}\
-.gcard h2\{margin:0 0 10px;font-size:26px\}\
-.gcard .sub\{margin-bottom:8px\}\
-.err\{color:#c2452b;font-size:13px;line-height:1.6;min-height:22px;margin:10px 4px 0\}\
-@media(prefers-color-scheme:dark)\{#gate\{background:rgba(36,27,21,.65)\}.err\{color:#ff9a7a\}\}\
-@media(max-width:860px)\{.shell\{padding:20px 18px 30px;border-radius:32px\}main\{grid-template-columns:1fr;gap:28px\}.hero\{position:static\}h1\{font-size:34px\}nav\{margin-left:0;width:100%\}.paper\{padding:26px 22px\}.paper h2\{font-size:32px\}\}\
-@media(prefers-reduced-motion:reduce)\{*\{transition:none!important\}\}\
-</style>\
-</head>\
-<body>\
-<div id="gate" role="dialog" aria-modal="true" aria-labelledby="gt">\
-  <form class="gcard" id="gateForm" novalidate>\
-    <div class="logo" style="display:inline-block;margin-bottom:22px">CS\uc0\u23458 \u26381 \u37096 \u38272 \u36890 \u29992 \u35422 \u20856 </div>\
-    <h2 id="gt">\uc0\u20808 \u39511 \u35657 \u20844 \u21496 \u20449 \u31665 </h2>\
-    <p class="sub">\uc0\u35531 \u36664 \u20837 \u20844 \u21496  Email \u24460 \u36914 \u20837 \u12290 </p>\
-    <label for="gEmail">\uc0\u20844 \u21496  Email</label>\
-    <input class="f" id="gEmail" type="email" inputmode="email" autocomplete="email" placeholder="fin.chang@swag.live" required>\
-    <div class="err" id="gErr" role="alert"></div>\
-    <div class="acts"><button class="btn">\uc0\u36914 \u20837 \u23383 \u20856 </button></div>\
-  </form>\
-</div>\
-\
-<div class="shell">\
-  <div class="blob" aria-hidden="true"></div>\
-  <header>\
-    <div class="logo">CS\uc0\u23458 \u26381 \u37096 \u38272 \u36890 \u29992 \u35422 \u20856 </div>\
-    <nav role="tablist" id="nav"></nav>\
-    <button class="icon" id="setBtn" title="\uc0\u24460 \u21488 " aria-label="\u24460 \u21488 " hidden>\u9881 </button>\
-  </header>\
-  <main>\
-    <section class="hero">\
-      <h1 id="title"></h1>\
-      <p class="sub" id="desc"></p>\
-      <div class="search"><input id="q" type="search" autocomplete="off" aria-label="\uc0\u25628 \u23563 "><span id="cnt" style="font-size:12px;color:var(--mute);padding-right:12px"></span></div>\
-      <button class="btn" id="addBtn"></button>\
-      <div class="stat"><span class="dot off" id="dot"></span><span id="stat"></span></div>\
-    </section>\
-    <section class="list" id="list" aria-live="polite"></section>\
-  </main>\
-</div>\
-\
-<dialog id="dlg"><form method="dialog" id="form" autocomplete="off"></form></dialog>\
-<dialog id="adm">\
-  <button class="xbtn" type="button" data-close aria-label="\uc0\u38364 \u38281 ">\u10005 </button>\
-  <h2>\uc0\u24460 \u21488 </h2>\
-  <div class="tabs" id="admTabs"><button data-at="logs">\uc0\u20351 \u29992 \u32000 \u37636 </button><button data-at="data">\u36039 \u26009 \u32317 \u35261 </button><button data-at="people">\u20154 \u21729 \u27402 \u38480 </button></div>\
-  <div id="admBody"></div>\
-</dialog>\
-<div class="toast" id="toast" role="status"></div>\
-\
-<script>\
-/* ---------- \uc0\u35373 \u23450 \u65288 \u19978 \u20659 \u21069 \u35531 \u22635 \u20837  Apps Script /exec \u32178 \u22336 \u65289  ---------- */\
-const APP = 'CS\uc0\u23458 \u26381 \u37096 \u38272 \u36890 \u29992 \u35422 \u20856 ';\
-const OWNER = 'fin.chang@swag.live';   // \uc0\u38656 \u33287  Code.gs \u30340  OWNER \u30456 \u21516 \
-const GAS_URL = '';                     // \uc0\u30041 \u31354  = \u31034 \u31684 \u27169 \u24335 \u65288 \u36039 \u26009 \u21482 \u23384 \u22312 \u36889 \u21488 \u28687 \u35261 \u22120 \u65292 \u20063 \u19981 \u26371 \u35352 \u37636  logs\u65289 \
-const GAS_KEY = '';                     // Code.gs \uc0\u26377 \u35373 \u23450  KEY \u25165 \u38656 \u35201 \
-const LOG_SEARCH = true;                // \uc0\u19981 \u24819 \u35352 \u37636 \u25628 \u23563 \u38364 \u37749 \u23383 \u23601 \u25913 \u25104  false\
-\
-const MODES = \{\
-  tags:    \{ nav:'Account Tag',    short:'\uc0\u27169 \u24335 \u19968  TAG',     title:'\u24115 \u34399  TAG \u36781 \u20856 ',      desc:'\u24115 \u34399 \u19978 \u30340  TAG \u26597 \u35426 \u28085 \u32681 \u24037 \u20855 ', ph:'\u35531 \u36664 \u20837 \u21934 \u20491 \u23436 \u25972 \u30340 TAG', add:'\u26032 \u22686  TAG', what:'TAG' \},\
-  events:  \{ nav:'Mixpanel Event', short:'\uc0\u27169 \u24335 \u20108  Mixpanel', title:'Mixpanel Event \u36895 \u26597 ', desc:'\u36664 \u20837 \u24819 \u26597 \u30340 \u20839 \u23481 \u65292 \u31995 \u32113 \u23559 \u28858 \u20320 \u25214 \u21040 \u36969 \u21512 \u26597 \u30475 \u30340  Event Name\u12290 ', ph:'\u20363 \u22914 \u65306 \u40670 \u25802 \u12289 button\u12289 v2.user.clicked', add:'\u26032 \u22686  Event', what:'Event' \},\
-  threads: \{ nav:'Threads',        short:'\uc0\u27169 \u24335 \u19977  \u35342 \u35542 \u20018 ',   title:'\u35342 \u35542 \u20018 \u25463 \u24465 ',          desc:'\u24555 \u36895 \u26597 \u25214 \u35342 \u35542 \u20018 \u65292 \u20006 \u30693 \u36947 \u35201  @ \u21738 \u20301 \u36000 \u36012 \u20154 ', ph:'\u36664 \u20837 \u20027 \u38988 \u25110 \u38364 \u37749 \u23383 \u65292 \u20363 \u22914  VIP\u12289 \u24291 \u21578 ', add:'\u26032 \u22686 \u35342 \u35542 \u20018 ', what:'\u35342 \u35542 \u20018 ' \}\
-\};\
-/* \uc0\u34920 \u21934 \u27396 \u20301 \u65306 [key, \u27161 \u31844 , \u39006 \u22411 , \u31684 \u20363 ] */\
-const F = \{\
-  tags: [['tag','Tag Name\uc0\u65288 \u22810 \u20491 \u20197 \u36887 \u34399 \u20998 \u38548 \u65289 ','text','fpid_phone_abuse, referral_abuse_5000'],['translation','Translation \u28085 \u32681 ','text','\u22871 \u21033 \u65292 \u21033 \u29992 \u27963 \u21205 \u35215 \u21063 \u28431 \u27934 \u19981 \u30070 \u21462 \u24471 \u29518 \u21237 '],['related','Related \u22238 \u35206 \u35441 \u34899 \u65288 \u36984 \u22635 \u65289 ','area','']],\
-  evnew: [['event','Event Name','text','v2.user.clicked'],['info','Description \uc0\u35498 \u26126 ','text','\u26597 \u29992 \u25142 \u22312 \u26178 \u38291 \u27573 \u20839 \u40670 \u20102 \u20160 \u40636 '],['keywords','\u38364 \u37749 \u23383 \u65288 \u36887 \u34399 \u20998 \u38548 \u65289 ','text','\u40670 , \u40670 \u25802 , \u25805 \u20316 , click']],\
-  evsub: [['sub','\uc0\u27396 \u20301 \u21517 \u31281 ','text','button.id'],['info','\u35498 \u26126 ','text','\u20351 \u29992 \u32773 \u40670 \u25802 \u30340 \u25353 \u37397 ']],\
-  evfull: [['event','Event Name','text',''],['sub','\uc0\u27396 \u20301 \u21517 \u31281 \u65288 \u31354 \u30333  = Event \u26412 \u36523 \u65289 ','text',''],['info','\u35498 \u26126 ','text',''],['keywords','\u38364 \u37749 \u23383 \u65288 \u36887 \u34399 \u20998 \u38548 \u65289 ','text','']],\
-  kw: [['keywords','\uc0\u26032 \u22686 \u38364 \u37749 \u23383 \u65288 \u21487 \u22810 \u20491 \u65292 \u20197 \u36887 \u34399 \u20998 \u38548 \u65289 ','text','\u20363 \u22914 \u65306 \u40670 \u25802 , \u25805 \u20316 ']],\
-  threads: [['title','\uc0\u27161 \u38988 ','text','VIP \u23562 \u27054 \u38928 \u32004 \u31995 \u32113 '],['platform','\u20358 \u28304 ','select:slack,notion',''],['url','\u36899 \u32080 \u32178 \u22336 ','text','https://swaglive.slack.com/\'85'],['mention','\u20358 \u33258 \u21738 \u20301 \u21516 \u20161 ','text','@Ashley'],['keywords','\u38364 \u37749 \u23383 \u65288 \u36887 \u34399 \u20998 \u38548 \u65289 ','text','\u24291 \u21578 , \u21830 \u21209 , MKT'],['note','\u20839 \u25991 ','area','\u36028 \u19978 \u35342 \u35542 \u20018 \u30340 \u20839 \u25991 ']]\
-\};\
-const SEED = \{\
-  tags:[\{id:'s1',tag:'fingerprint-pro:failed, suspicious',translation:'\uc0\u35037 \u32622 FPID\u37325 \u35079 \u65292 \u19981 \u24471 \u20139 \u26377 \u26032 \u25163 \u20778 \u24800 \u12289 \u23566 \u36092 \u20778 \u24800 ',related:'\u24744 \u22909 \u65292 \u32147 \u26597 \u35426 \u65292 \u24744 \u30340 \u24115 \u34399 \u30001 \u26044 \u19981 \u31526 \u21512 \u36092 \u36023 \u35442 \u20778 \u24800 \u31150 \u21253 \u30340 \u26781 \u20214 \u65292 \u35531 \u36984 \u25799 \u36092 \u36023 \u20854 \u20182 \u31150 \u21253 \u65292 \u20854 \u39192 \u20351 \u29992 \u19981 \u21463 \u24433 \u38911 \u12290 \\n\u27492 \u38480 \u21046 \u20006 \u38750 \u20195 \u34920 \u24744 \u24050 \u36914 \u34892 \u36949 \u35215 \u20786 \u20540 \u65292 \u32780 \u26159 \u31995 \u32113 \u22312 \u24115 \u34399 \u35413 \u20272 \u36942 \u31243 \u20013 \u65292 \u22522 \u26044 \u39080 \u38570 \u25511 \u31649 \u27231 \u21046 \u65292 \u23565 \u37096 \u20998 \u24115 \u34399 \u20808 \u34892 \u38364 \u38281 \u20786 \u20540 \u21151 \u33021 \u20197 \u36991 \u20813 \u24460 \u32396 \u39080 \u38570 \u12290 \\n\\n\u30456 \u38364 \u21028 \u26039 \u23660 \u26044 \u24179 \u21488 \u39080 \u25511 \u27231 \u21046 \u30340 \u19968 \u29872 \u65292 \u21028 \u26039 \u26781 \u20214 \u33287 \u32048 \u31680 \u28961 \u27861 \u23565 \u22806 \u35498 \u26126 \u65292 \u23458 \u26381 \u31471 \u20134 \u28961 \u27861 \u20154 \u24037 \u35519 \u25972 \u65292 \u25964 \u35531 \u35211 \u35538 \u12290 '\}],\
-  events:[\{id:'e0',event:'v2.user.clicked',sub:'',info:'\uc0\u26597 \u29992 \u25142 \u22312 \u26178 \u38291 \u27573 \u20839 \u40670 \u20102 \u20160 \u40636 ',keywords:'\u40670 , \u40670 \u25802 , \u25805 \u20316 , click'\},\
-          \{id:'e1',event:'v2.user.clicked',sub:'button.id',info:'\uc0\u20351 \u29992 \u32773 \u40670 \u25802 \u30340 \u25353 \u37397 ',keywords:''\},\
-          \{id:'e2',event:'v2.user.clicked',sub:'Browser',info:'\uc0\u20351 \u29992 \u32773 \u20351 \u29992 \u30340 \u28687 \u35261 \u22120 \u65292 \u22914  Chrome iOS \u31561 ',keywords:''\},\
-          \{id:'e3',event:'v2.user.clicked',sub:'Device',info:'\uc0\u20351 \u29992 \u32773 \u20351 \u29992 \u30340 \u35037 \u32622 \u65292 \u22914  iPhone / Android \u31561 ',keywords:''\},\
-          \{id:'e4',event:'v2.user.clicked',sub:'metadata.flavor',info:'\uc0\u20351 \u29992 \u32773 \u20351 \u29992 \u30340 \u28687 \u35261 \u22120 \u65292 \u22914  swag.live / pwa \u31561 ',keywords:''\}],\
-  threads:[\{id:'s5',title:'\uc0\u24291 \u21578 \u33287 \u21830 \u21209 \u21512 \u20316 \u34920 \u21934 \u30064 \u24120 ',keywords:'\u24291 \u21578 , \u21830 \u21209 , MKT, \u26989 \u21209 \u21512 \u20316 ',platform:'slack',url:'https://swaglive.slack.com/archives/C9VQKQ8TW/p1795581437725569?thread_ts=1795066187.053669&cid=C9VQKQ8TW',mention:'@Christine Lin',\
-    note:'SWAG \uc0\u24291 \u21578 \u33287 \u21830 \u21209 \u21512 \u20316 \u38913 \u38754 \u19978 \u32218 \u22217 \u65281 \\n  https://swag.live/business\\n\u21407 \u26412  footer \u20998 \u25104 \u12300 \u24291 \u21578 \u12301 \u21644 \u12300 \u26989 \u21209 \u21512 \u20316 \u12301 \u20841 \u20491 \u20449 \u31665 \u20837 \u21475 \u65292 \u29694 \u22312 \u21512 \u20341 \u25104 \u19968 \u20491 \u12300 \u24291 \u21578 \u33287 \u21830 \u21209 \u21512 \u20316 \u12301 \u38913 \u38754 \u65292 \u21487 \u20197 \u30475 \u21040 \u65306 \\n \'95 \u31449 \u20839 \u24291 \u21578 \u29256 \u20301 \u65288 Banner\u12289 \u30452 \u25773 \u38291 \u32622 \u38914 \u20844 \u21578 \u36899 \u32080 \u31561 \u65289 \\n \'95 \u21697 \u29260 \u65295 \u30064 \u26989 \u21512 \u20316 \u12289 \u21109 \u20316 \u32773 \u20839 \u23481 \u23186 \u21512 \\n \'95 \u32218 \u19978 \u38656 \u27714 \u34920 \u21934 \u65292 \u22635 \u23436 \u26371 \u30452 \u25509 \u36914 \u21040  MKT \u30340 \u36861 \u36452 \u34920 \\n \u20043 \u24460 \u22823 \u23478 \u25910 \u21040 \u21697 \u29260 \u12289 \u24288 \u21830 \u12289 \u20379 \u25033 \u21830 \u30340 \u21512 \u20316 \u35426 \u21839 \u65292 \u30452 \u25509 \u20998 \u20139 \u36889 \u20491 \u36899 \u32080 \u35531 \u23565 \u26041 \u22635 \u21934 \u65292 \u25105 \u26371 \u36000 \u36012 \u24460 \u32396 \u32879 \u32363 \u65374 \\n\u26377 \u20219 \u20309 \u21839 \u38988 \u25110 \u30332 \u29694 \u38913 \u38754  bug \u37117 \u27489 \u36814 \u25214 \u25105 \u65281 \\n\u29305 \u21029 \u24863 \u35613  [@Kenny Hung](https://swaglive.slack.com/team/U0AN3CQV7G8) [@Home Liu](https://swaglive.slack.com/team/U0AHPVB96QK) [@Nick Kuo](https://swaglive.slack.com/team/U08LGFEL717) [@Zooey](https://swaglive.slack.com/team/U0531HBQPD5) \u21332 \u21161 \u65292 \u35731 \u38913 \u38754 \u38918 \u21033 \u19978 \u32218 '\}]\
-\};\
-\
-/* ---------- \uc0\u29376 \u24907 \u33287 \u24037 \u20855  ---------- */\
-const $ = s => document.querySelector(s);\
-const esc = s => String(s ?? '').replace(/[&<>"']/g, c => (\{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'\}[c]));\
-const ls = \{ get:(k,d)=>\{try\{return localStorage.getItem(k)??d\}catch\{return d\}\}, set:(k,v)=>\{try\{localStorage.setItem(k,v)\}catch\{\}\} \};\
-const split = s => String(s||'').split(/[,\uc0\u65292 ]/).map(x=>x.trim()).filter(Boolean);\
-let mode = (location.hash.slice(1) in MODES) ? location.hash.slice(1) : 'tags';\
-let data = JSON.parse(ls.get('dict_local2', 'null') || 'null') || JSON.parse(JSON.stringify(SEED));\
-data.admins ||= []; data.recent ||= [];\
-let online = false, user = '', selEvent = null;\
-const saveLocal = () => ls.set('dict_local2', JSON.stringify(data));\
-const role = () => user === OWNER ? 'owner' : ((data.admins.find(a => (a.email||'').toLowerCase() === user) || \{\}).role || '');\
-const isAdmin = () => !!role();\
-\
-function toast(m)\{const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),1800)\}\
-async function copy(text, msg='\uc0\u24050 \u35079 \u35069 ')\{try\{await navigator.clipboard.writeText(text);toast(msg)\}catch\{toast('\u35079 \u35069 \u22833 \u25943 \u65292 \u35531 \u25163 \u21205 \u36984 \u21462 ')\}\}\
-function rich(s)\{ // \uc0\u20839 \u25991 \u65306 \u25563 \u34892 \u20445 \u30041 \u65292 [\u25991 \u23383 ](\u32178 \u22336 ) \u33287 \u32178 \u22336 \u36681 \u25104 \u36899 \u32080 \
-  return String(s||'').split(/(\\[[^\\]]+\\]\\(https?:\\/\\/[^)\\s]+\\)|https?:\\/\\/[^\\s<>)\\]]+)/g).map(p=>\{\
-    let m = p.match(/^\\[([^\\]]+)\\]\\((https?:\\/\\/[^)\\s]+)\\)$/);\
-    if(m) return `<a href="$\{esc(m[2])\}" target="_blank" rel="noopener">$\{esc(m[1])\}</a>`;\
-    if(/^https?:\\/\\//.test(p)) return `<a href="$\{esc(p)\}" target="_blank" rel="noopener">$\{esc(p)\}</a>`;\
-    return esc(p);\
-  \}).join('');\
-\}\
-\
-/* ---------- \uc0\u24460 \u31471  ---------- */\
-async function api(op, extra=\{\})\{\
-  if(!GAS_URL) throw new Error('\uc0\u23578 \u26410 \u35373 \u23450 \u24460 \u31471 \u32178 \u22336 \u65288 GAS_URL\u65289 ');\
-  const r = await fetch(GAS_URL, \{ method:'POST', headers:\{'Content-Type':'text/plain;charset=utf-8'\}, body:JSON.stringify(\{op, email:user, key:GAS_KEY, ...extra\}) \});\
-  const j = await r.json(); if(!j.ok) throw new Error(j.error); return j;\
-\}\
-async function load()\{\
-  if(!GAS_URL)\{ online=false; afterLoad(); return; \}\
-  try\{\
-    const r = await fetch(GAS_URL + '?key=' + encodeURIComponent(GAS_KEY) + '&t=' + Date.now());\
-    const j = await r.json(); if(!j.ok) throw new Error(j.error);\
-    data = \{ tags:j.tags, events:j.events, threads:j.threads, admins:j.admins||[], recent:j.recent||[] \}; online = true; saveLocal();\
-  \}catch(e)\{ online=false; toast('\uc0\u28961 \u27861 \u36899 \u32218  Sheet\u65292 \u39023 \u31034 \u19978 \u27425 \u30340 \u24555 \u21462 '); \}\
-  afterLoad();\
-\}\
-function afterLoad()\{ $('#setBtn').hidden = !(user && isAdmin()); render(); if($('#adm').open) renderAdm(); \}\
-async function write(op, sheet, row)\{\
-  if(!GAS_URL)\{\
-    const arr = data[sheet]; row.updated = new Date().toISOString();\
-    if(op==='add')\{ row.id='l'+Date.now()+Math.floor(Math.random()*99); arr.push(row); \}\
-    else\{ const i=arr.findIndex(x=>x.id===row.id); if(i>-1)\{ op==='delete' ? arr.splice(i,1) : arr[i]=row; \} \}\
-    saveLocal(); afterLoad(); return true;\
-  \}\
-  try\{ await api(op, \{sheet, row\}); await load(); return true; \}\
-  catch(e)\{ toast('\uc0\u23531 \u20837 \u22833 \u25943 \u65306 ' + e.message); return false; \}\
-\}\
-function logRaw(action)\{\
-  if(!GAS_URL || !user) return;\
-  fetch(GAS_URL, \{ method:'POST', keepalive:true, headers:\{'Content-Type':'text/plain;charset=utf-8'\}, body:JSON.stringify(\{op:'log', email:user, action, key:GAS_KEY\}) \}).catch(()=>\{\});\
-\}\
-const logS = (m, act, detail) => act && logRaw([MODES[m].short, act, detail].filter(Boolean).join('\uc0\u65372 '));\
-const logAct = (act, detail) => logS(mode, act, detail);\
-\
-/* ---------- \uc0\u25628 \u23563  ---------- */\
-const hay = o => Object.values(o).join(' ').toLowerCase();\
-const match = (row, q) => q.toLowerCase().split(/\\s+/).filter(Boolean).every(t => hay(row).includes(t));\
-function evGroups()\{\
-  const g = \{\};\
-  (data.events||[]).forEach(r => \{ const o = g[r.event] ||= \{name:r.event, head:null, subs:[]\}; if(r.sub) o.subs.push(r); else o.head ||= r; \});\
-  return g;\
-\}\
-const evHay = g => [g.name, g.head?.keywords, g.head?.info, ...g.subs.map(s=>s.sub+' '+s.info)].join(' ').toLowerCase();\
-const erow = g => `<button class="erow" data-ev="$\{esc(g.name)\}"><b>$\{esc(g.name)\}</b> \uc0\u65372  $\{esc(g.head?.info||'')\}</button>`;\
-const notFound = what => `<div class="empty">\uc0\u35422 \u20856 \u20013 \u26283 \u28961 \u27492 \u20839 \u23481 \u65292 \u40670 <button class="linkbtn" data-new>\u65291 \u26032 \u22686  $\{what\}</button>\u21966 \u65311 </div>`;\
-\
-/* ---------- \uc0\u30059 \u38754  ---------- */\
-function paintChrome()\{\
-  const m = MODES[mode];\
-  $('#nav').innerHTML = Object.entries(MODES).map(([k,v])=>`<button role="tab" data-m="$\{k\}" aria-selected="$\{k===mode\}">$\{v.nav\}</button>`).join('');\
-  $('#title').textContent = m.title; $('#desc').textContent = m.desc;\
-  $('#q').placeholder = m.ph; $('#addBtn').textContent = '\uc0\u65291  ' + m.add;\
-\}\
-function render()\{\
-  $('#dot').className = 'dot' + (online ? '' : ' off');\
-  $('#stat').textContent = online ? 'Google Sheet \uc0\u24050 \u36899 \u32218 ' : (GAS_URL ? '\u38626 \u32218 \u65292 \u39023 \u31034 \u24555 \u21462 ' : '\u31034 \u31684 \u27169 \u24335 \u65288 \u36039 \u26009 \u21482 \u23384 \u22312 \u36889 \u21488 \u28687 \u35261 \u22120 \u65289 ');\
-  const q = $('#q').value.trim(), el = $('#list'); let html = '', n = '';\
-  if(mode==='tags')\{\
-    const toks = q.toLowerCase().split(/[,\uc0\u65292 \\s]+/).filter(Boolean);\
-    const r = q ? data.tags.filter(x => split(x.tag).some(t => toks.includes(t.toLowerCase()))) : data.tags;\
-    if(q) n = r.length;\
-    html = r.map(x=>`<article class="card">\
-      <div class="chips">$\{split(x.tag).map(t=>`<button class="chip" data-copy="$\{esc(t)\}" data-act="\uc0\u35079 \u35069 TAG" data-ref="$\{esc(t)\}" title="\u35079 \u35069  TAG">$\{esc(t)\}</button>`).join('')\}</div>\
-      <p class="mean">$\{esc(x.translation)\}</p>\
-      $\{x.related?`<div class="reply">$\{esc(x.related)\}</div>`:''\}\
-      <div class="row">$\{x.related?`<button class="mini go" data-copy="$\{esc(x.related)\}" data-msg="\uc0\u24050 \u35079 \u35069 \u22238 \u35206 \u35441 \u34899 " data-act="\u35079 \u35069 \u22238 \u35206 \u35441 \u34899 " data-ref="$\{esc(x.tag)\}">\u35079 \u35069 \u22238 \u35206 \u35441 \u34899 </button>`:''\}<button class="mini sp" data-edit="$\{x.id\}">\u32232 \u36655 </button></div></article>`).join('');\
-    if(q && !r.length) html = notFound('TAG');\
-  \}else if(mode==='events')\{\
-    const g = evGroups();\
-    if(selEvent && g[selEvent])\{\
-      const o = g[selEvent];\
-      html = `<div class="row" style="margin:0"><button class="mini" data-back>\uc0\u8592  \u36820 \u22238 \u21015 \u34920 </button></div>\
-      <article class="paper">\
-        <h2 data-copy="$\{esc(o.name)\}" data-act="\uc0\u35079 \u35069 Event\u21517 \u31281 " data-ref="$\{esc(o.name)\}" title="\u40670 \u25802 \u35079 \u35069 ">$\{esc(o.name)\}</h2>\
-        <div class="kw"><span>$\{esc(split(o.head?.keywords).join(', ') || '\uc0\u23578 \u28961 \u38364 \u37749 \u23383 ')\}</span><button class="mini sm" data-addkw="$\{esc(o.name)\}">\u65291 \u26032 \u22686 \u38364 \u37749 \u23383 </button></div>\
-        <hr>\
-        $\{o.subs.map(s=>`<div class="line"><button class="k" data-copy="$\{esc(s.sub)\}" data-act="\uc0\u35079 \u35069 \u27396 \u20301 " data-ref="$\{esc(o.name)\} / $\{esc(s.sub)\}">$\{esc(s.sub)\}</button>\u65372 $\{esc(s.info)\}</div>`).join('') || '<div class="line">\u23578 \u28961 \u27396 \u20301 \u36039 \u35338 </div>'\}\
-        <div class="row"><button class="mini go" data-addsub="$\{esc(o.name)\}">\uc0\u65291 \u26032 \u22686 \u27396 \u20301 </button></div>\
-      </article>`;\
-    \}else if(!q)\{\
-      const seen = new Set(), names = [];\
-      [...(data.recent||[]), ...Object.values(g).sort((a,b)=>(b.head?.updated||'').localeCompare(a.head?.updated||'')).map(x=>x.name)]\
-        .forEach(x => \{ if(g[x] && !seen.has(x) && names.length<8)\{ seen.add(x); names.push(x); \} \});\
-      html = names.length ? `<p class="note" style="margin:0">\uc0\u26368 \u36817 \u34987 \u26597 \u30475 \u30340  Event</p>` + names.map(x=>erow(g[x])).join('') : '<div class="empty">\u36996 \u27794 \u26377  Event\u65292 \u25353 \u24038 \u20596 \u12300 \u26032 \u22686  Event\u12301 \u24314 \u31435 \u31532 \u19968 \u31558 \u12290 </div>';\
-    \}else\{\
-      const ql = q.toLowerCase(), toks = ql.split(/\\s+/).filter(Boolean);\
-      const r = Object.values(g).filter(o => toks.every(t => evHay(o).includes(t)))\
-        .sort((a,b) => (b.name.toLowerCase().includes(ql)) - (a.name.toLowerCase().includes(ql)));\
-      n = r.length; html = r.length ? r.map(erow).join('') : notFound('Event');\
-    \}\
-  \}else\{\
-    const all = data.threads || [];\
-    const r = q ? all.filter(x => match(x,q)) : [...all].reverse().slice(0,8);\
-    if(q) n = r.length;\
-    html = r.map(x=>`<article class="card">\
-      <h3>$\{esc(x.title)\}</h3>\
-      <div class="chips" style="margin:10px 0 8px"><span class="chip plain">$\{esc(x.platform||'')\}</span>$\{split(x.mention).map(t=>`<button class="chip" data-copy="$\{esc(t)\}" data-act="\uc0\u35079 \u35069 @\u23565 \u35937 " data-ref="$\{esc(x.title)\} \u8594  $\{esc(t)\}" title="\u35079 \u35069  @ \u21517 \u31281 ">$\{esc(t)\}</button>`).join('')\}</div>\
-      <div class="kwline"><i>$\{esc(split(x.keywords).join(', ') || '\uc0\u23578 \u28961 \u38364 \u37749 \u23383 ')\}</i><button class="mini sm" data-addkwth="$\{x.id\}">\u65291 \u26032 \u22686 \u38364 \u37749 \u23383 </button></div>\
-      $\{x.note?`<div class="bodywrap"><div class="body">$\{rich(x.note)\}</div><button class="arrow" hidden data-toggle aria-label="\uc0\u23637 \u38283 \u25110 \u25910 \u21512 ">\u9662 </button></div>`:''\}\
-      <div class="row">$\{x.url?`<button class="mini go" data-copy="$\{esc(x.url)\}" data-msg="\uc0\u24050 \u35079 \u35069 \u36899 \u32080 " data-act="\u35079 \u35069 \u36899 \u32080 " data-ref="$\{esc(x.title)\}">\u35079 \u35069 \u36899 \u32080 </button>`:'<span class="note" style="margin:0">\u23578 \u26410 \u22635 \u36899 \u32080 </span>'\}<button class="mini sp" data-edit="$\{x.id\}">\u32232 \u36655 </button></div></article>`).join('');\
-    if(q && !r.length) html = notFound('\uc0\u35342 \u35542 \u20018 ');\
-    if(!q && !r.length) html = '<div class="empty">\uc0\u36996 \u27794 \u26377 \u35342 \u35542 \u20018 \u65292 \u25353 \u24038 \u20596 \u12300 \u26032 \u22686 \u35342 \u35542 \u20018 \u12301 \u24314 \u31435 \u31532 \u19968 \u31558 \u12290 </div>';\
-  \}\
-  $('#cnt').textContent = n;\
-  el.innerHTML = html;\
-  requestAnimationFrame(() => document.querySelectorAll('.body').forEach(b => \{ const a = b.parentElement.querySelector('.arrow'); if(a) a.hidden = !(b.scrollHeight > b.clientHeight + 2); \}));\
-\}\
-\
-/* ---------- \uc0\u36890 \u29992 \u34920 \u21934 \u65288 \u21491 \u19978 \u35282  X\u12289 \u20786 \u23384 \u12289 \u21462 \u28040 \u65289  ---------- */\
-function form(\{title, cols, v=\{\}, onSave, onDelete\})\{\
-  $('#form').innerHTML = `<button class="xbtn" type="button" data-close aria-label="\uc0\u38364 \u38281 ">\u10005 </button><h2>$\{esc(title)\}</h2>` + cols.map(([k,l,t,ph])=>\{\
-    const id='f_'+k;\
-    if(t==='area') return `<label for="$\{id\}">$\{l\}</label><textarea class="f" id="$\{id\}" name="$\{k\}" placeholder="$\{esc(ph)\}">$\{esc(v[k])\}</textarea>`;\
-    if(t.startsWith('select')) return `<label for="$\{id\}">$\{l\}</label><select class="f" id="$\{id\}" name="$\{k\}">$\{t.split(':')[1].split(',').map(o=>`<option $\{v[k]===o?'selected':''\}>$\{o\}</option>`).join('')\}</select>`;\
-    return `<label for="$\{id\}">$\{l\}</label><input class="f" id="$\{id\}" name="$\{k\}" value="$\{esc(v[k])\}" placeholder="$\{esc(ph)\}">`;\
-  \}).join('') + `<div class="acts"><button class="btn" value="ok">\uc0\u20786 \u23384 </button><button class="btn ghost" value="cancel" formnovalidate>\u21462 \u28040 </button>$\{onDelete?'<button class="btn danger sp" type="button" id="delBtn">\u21034 \u38500 </button>':''\}</div>`;\
-  const d = $('#dlg'); d.showModal();\
-  $('#form').onsubmit = async e => \{\
-    if(e.submitter?.value !== 'ok') return;\
-    const fd = new FormData($('#form')), out = \{\};\
-    cols.forEach(([k]) => out[k] = (fd.get(k)||'').trim());\
-    if(!out[cols[0][0]])\{ e.preventDefault(); toast('\uc0\u35531 \u22635 \u23531 \u12300 ' + cols[0][1].split('\u65288 ')[0] + '\u12301 '); return; \}\
-    await onSave(out);\
-  \};\
-  const del = $('#delBtn');\
-  if(del) del.onclick = async () => \{ if(confirm('\uc0\u30906 \u23450 \u21034 \u38500 \u36889 \u31558 \u36039 \u26009 \u65311 '))\{ d.close(); await onDelete(); \} \};\
-\}\
-const rowName = (sheet, r) => sheet==='tags' ? r.tag : sheet==='events' ? r.event + (r.sub ? ' / ' + r.sub : '') : r.title;\
-function openEdit(sheet, id)\{\
-  const row = data[sheet].find(x => x.id === id); if(!row) return;\
-  const cols = sheet==='tags' ? F.tags : sheet==='events' ? F.evfull : F.threads;\
-  form(\{ title:'\uc0\u32232 \u36655 \u65372 ' + MODES[sheet].nav, cols, v:row,\
-    onSave: async o => \{ if(await write('update', sheet, \{...row, ...o\}))\{ toast('\uc0\u24050 \u20786 \u23384 '); logS(sheet, '\u32232 \u36655 ', rowName(sheet, o)); \} \},\
-    onDelete: isAdmin() ? async () => \{ if(await write('delete', sheet, row))\{ toast('\uc0\u24050 \u21034 \u38500 '); logS(sheet, '\u21034 \u38500 ', rowName(sheet, row)); \} \} : null \});\
-\}\
-function openNew(q='')\{\
-  if(mode==='tags') form(\{ title:'\uc0\u26032 \u22686  TAG', cols:F.tags, v:\{tag:q\}, onSave: async o => \{ if(await write('add','tags',o))\{ toast('\u24050 \u20786 \u23384 '); logS('tags','\u26032 \u22686 ',o.tag); \} \} \});\
-  else if(mode==='events') form(\{ title:'\uc0\u26032 \u22686  Event', cols:F.evnew, v:/\\./.test(q)?\{event:q\}:\{keywords:q\}, onSave: async o => \{\
-    if(evGroups()[o.event])\{ toast('\uc0\u36889 \u20491  Event \u24050 \u23384 \u22312 '); selEvent=o.event; render(); return; \}\
-    if(await write('add','events',\{event:o.event, sub:'', info:o.info, keywords:o.keywords\}))\{ toast('\uc0\u24050 \u20786 \u23384 '); logS('events','\u26032 \u22686 ',o.event); selEvent=o.event; $('#q').value=''; render(); \} \} \});\
-  else form(\{ title:'\uc0\u26032 \u22686 \u35342 \u35542 \u20018 ', cols:F.threads, v:\{keywords:q\}, onSave: async o => \{ if(await write('add','threads',o))\{ toast('\u24050 \u20786 \u23384 '); logS('threads','\u26032 \u22686 ',o.title); \} \} \});\
-\}\
-const mergeKw = (a, b) => [...new Set([...split(a), ...split(b)])].join(', ');\
-function addKwEvent(name)\{\
-  const head = evGroups()[name]?.head;\
-  form(\{ title:'\uc0\u26032 \u22686 \u38364 \u37749 \u23383 \u65372 ' + name, cols:F.kw, onSave: async o => \{\
-    const ok = head ? await write('update','events',\{...head, keywords:mergeKw(head.keywords,o.keywords)\}) : await write('add','events',\{event:name, sub:'', info:'', keywords:o.keywords\});\
-    if(ok)\{ toast('\uc0\u24050 \u26032 \u22686 \u38364 \u37749 \u23383 '); logS('events','\u26032 \u22686 \u38364 \u37749 \u23383 ',name); \} \} \});\
-\}\
-function addKwThread(id)\{\
-  const row = data.threads.find(x=>x.id===id); if(!row) return;\
-  form(\{ title:'\uc0\u26032 \u22686 \u38364 \u37749 \u23383 \u65372 ' + row.title, cols:F.kw, onSave: async o => \{\
-    if(await write('update','threads',\{...row, keywords:mergeKw(row.keywords,o.keywords)\}))\{ toast('\uc0\u24050 \u26032 \u22686 \u38364 \u37749 \u23383 '); logS('threads','\u26032 \u22686 \u38364 \u37749 \u23383 ',row.title); \} \} \});\
-\}\
-function addSub(name)\{\
-  form(\{ title:'\uc0\u26032 \u22686 \u27396 \u20301 \u65372 ' + name, cols:F.evsub, onSave: async o => \{\
-    if(await write('add','events',\{event:name, sub:o.sub, info:o.info, keywords:''\}))\{ toast('\uc0\u24050 \u26032 \u22686 \u27396 \u20301 '); logS('events','\u26032 \u22686 \u27396 \u20301 ',name + ' / ' + o.sub); \} \} \});\
-\}\
-function openEvent(name)\{\
-  selEvent = name; logS('events','\uc0\u26597 \u30475 Event',name);\
-  data.recent = [name, ...(data.recent||[]).filter(x=>x!==name)].slice(0,8); saveLocal(); render();\
-\}\
-\
-/* ---------- \uc0\u24460 \u21488  ---------- */\
-let admTab = 'logs', admSheet = 'tags', admLogs = [];\
-const ROLE = \{ owner:'\uc0\u25793 \u26377 \u32773 \u65288 \u21487 \u31649 \u29702 \u20154 \u21729 \u65289 ', admin:'\u31649 \u29702 \u21729 \u65288 \u21487 \u30475 \u24460 \u21488 \u65289 ' \};\
-async function renderAdm()\{\
-  document.querySelectorAll('#admTabs button').forEach(x => x.setAttribute('aria-selected', x.dataset.at === admTab));\
-  const b = $('#admBody');\
-  if(admTab === 'logs')\{\
-    b.innerHTML = '<p class="note">\uc0\u36617 \u20837 \u20013 \'85</p>';\
-    try\{ admLogs = (await api('logs')).logs; \}catch(e)\{ b.innerHTML = `<p class="note">$\{esc(e.message)\}</p>`; return; \}\
-    b.innerHTML = `<div class="bar"><input class="f" id="admQ" placeholder="\uc0\u31721 \u36984 \u20449 \u31665 \u12289 \u26178 \u38291 \u25110 \u21205 \u20316 "><button class="mini" data-refresh>\u37325 \u26032 \u36617 \u20837 </button></div><div class="tblwrap" id="admTbl"></div>`;\
-  \}else if(admTab === 'data')\{\
-    b.innerHTML = `<div class="bar"><select class="f" id="admSheet" style="max-width:200px">$\{Object.entries(MODES).map(([k,v])=>`<option value="$\{k\}" $\{k===admSheet?'selected':''\}>$\{v.nav\}</option>`).join('')\}</select><input class="f" id="admQ" placeholder="\uc0\u25628 \u23563 \u20840 \u37096 \u27396 \u20301 "></div><div class="tblwrap" id="admTbl"></div>`;\
-  \}else\{\
-    const rows = [\{email:OWNER, role:'owner', fixed:true\}, ...data.admins.filter(a => (a.email||'').toLowerCase() !== OWNER)];\
-    const own = role() === 'owner';\
-    b.innerHTML = `<p class="note" style="margin:0 0 4px">\uc0\u25793 \u26377 \u32773 \u21487 \u26032 \u22686 \u25110 \u31227 \u38500 \u20154 \u21729 \u65307 \u31649 \u29702 \u21729 \u21487 \u36914 \u24460 \u21488 \u26597 \u30475 \u32000 \u37636 \u33287 \u32232 \u36655 \u12289 \u21034 \u38500 \u36039 \u26009 \u12290 </p>\
-      $\{own ? `<div class="bar" style="margin-top:14px"><input class="f" id="pEmail" placeholder="\uc0\u20844 \u21496  Email\u65292 \u20363 \u22914  sam@swag.live"><select class="f" id="pRole" style="max-width:220px"><option value="admin">$\{ROLE.admin\}</option><option value="owner">$\{ROLE.owner\}</option></select><button class="mini go" data-padd>\u26032 \u22686 \u20154 \u21729 </button></div>` : ''\}\
-      <div class="tblwrap"><table class="tbl"><thead><tr><th>\uc0\u20449 \u31665 </th><th>\u27402 \u38480 </th><th></th></tr></thead><tbody>$\{rows.map(a=>`<tr><td>$\{esc(a.email)\}</td><td>$\{esc(ROLE[a.role]||a.role)\}</td><td>$\{own && !a.fixed ? `<button class="mini" data-pdel="$\{esc(a.email)\}">\u31227 \u38500 </button>` : ''\}</td></tr>`).join('')\}</tbody></table></div>`;\
-    return;\
-  \}\
-  fillTbl();\
-\}\
-function fillTbl()\{\
-  const q = ($('#admQ')?.value || '').trim().toLowerCase(), t = $('#admTbl'); if(!t) return;\
-  if(admTab === 'logs')\{\
-    const r = admLogs.filter(x => !q || (x.email+' '+x.time+' '+x.action).toLowerCase().includes(q));\
-    t.innerHTML = `<table class="tbl"><thead><tr><th>\uc0\u20449 \u31665 </th><th>\u26178 \u38291 </th><th>\u27169 \u24335 \u65372 \u21205 \u20316 \u65372 \u23565 \u35937 </th></tr></thead><tbody>$\{r.map(x=>`<tr><td>$\{esc(x.email)\}</td><td style="white-space:nowrap">$\{esc(x.time)\}</td><td>$\{esc(x.action)\}</td></tr>`).join('') || '<tr><td colspan="3">\u27794 \u26377 \u32000 \u37636 </td></tr>'\}</tbody></table>`;\
-  \}else\{\
-    const cols = \{tags:['tag','translation','related'], events:['event','sub','info','keywords'], threads:['title','platform','mention','keywords','url']\}[admSheet];\
-    const r = (data[admSheet]||[]).filter(x => !q || hay(x).includes(q));\
-    t.innerHTML = `<table class="tbl"><thead><tr>$\{cols.map(c=>`<th>$\{c\}</th>`).join('')\}<th></th></tr></thead><tbody>$\{r.map(x=>`<tr>$\{cols.map(c=>`<td class="cl" title="$\{esc(x[c])\}">$\{esc(x[c])\}</td>`).join('')\}<td><button class="mini" data-aedit="$\{x.id\}">\uc0\u32232 \u36655 </button></td></tr>`).join('') || `<tr><td colspan="$\{cols.length+1\}">\u27794 \u26377 \u36039 \u26009 </td></tr>`\}</tbody></table>`;\
-  \}\
-\}\
-async function adminOp(op, target, extra)\{\
-  try\{ await api(op, \{target, ...extra\}); await load(); toast('\uc0\u24050 \u26356 \u26032 '); logRaw(`\u24460 \u21488 \u65372 $\{op==='admin_add'?'\u26032 \u22686 \u20154 \u21729 ':'\u31227 \u38500 \u20154 \u21729 '\}\u65372 $\{target\}`); \}\
-  catch(e)\{ toast('\uc0\u25805 \u20316 \u22833 \u25943 \u65306 ' + e.message); \}\
-\}\
-\
-/* ---------- \uc0\u20107 \u20214  ---------- */\
-document.addEventListener('click', e => \{\
-  const t = e.target.closest('[data-m],[data-copy],[data-edit],[data-ev],[data-back],[data-addsub],[data-addkw],[data-addkwth],[data-toggle],[data-new],[data-close],[data-at],[data-aedit],[data-refresh],[data-padd],[data-pdel]');\
-  if(!t) return;\
-  const d = t.dataset;\
-  if(d.m)\{ mode=d.m; selEvent=null; location.hash=mode; $('#q').value=''; paintChrome(); render(); \}\
-  else if(d.copy !== undefined)\{ if(d.copy)\{ copy(d.copy, d.msg); logAct(d.act, d.ref); \} \}\
-  else if(d.edit) openEdit(mode, d.edit);\
-  else if(d.ev) openEvent(d.ev);\
-  else if(d.back !== undefined)\{ selEvent=null; render(); \}\
-  else if(d.addsub) addSub(d.addsub);\
-  else if(d.addkw) addKwEvent(d.addkw);\
-  else if(d.addkwth) addKwThread(d.addkwth);\
-  else if(d.toggle !== undefined)\{ t.previousElementSibling.classList.toggle('open'); t.classList.toggle('up'); \}\
-  else if(d.new !== undefined) openNew($('#q').value.trim());\
-  else if(d.close !== undefined) t.closest('dialog').close();\
-  else if(d.at)\{ admTab = d.at; renderAdm(); \}\
-  else if(d.aedit) openEdit(admSheet, d.aedit);\
-  else if(d.refresh !== undefined) renderAdm();\
-  else if(d.padd !== undefined)\{ const em = $('#pEmail').value.trim().toLowerCase(); const msg = checkEmail(em); if(msg)\{ toast(msg); return; \} adminOp('admin_add', em, \{role:$('#pRole').value\}); \}\
-  else if(d.pdel)\{ if(confirm('\uc0\u30906 \u23450 \u31227 \u38500  ' + d.pdel + '\u65311 ')) adminOp('admin_del', d.pdel); \}\
-\});\
-document.addEventListener('input', e => \{ if(e.target.id === 'admQ') fillTbl(); \});\
-document.addEventListener('change', e => \{ if(e.target.id === 'admSheet')\{ admSheet = e.target.value; fillTbl(); \} \});\
-let sTimer;\
-$('#q').addEventListener('input', () => \{ selEvent = null; render(); clearTimeout(sTimer); const v = $('#q').value.trim();\
-  if(LOG_SEARCH && v.length >= 2) sTimer = setTimeout(() => logAct('\uc0\u25628 \u23563 ', v), 1500); \});\
-$('#addBtn').onclick = () => openNew('');\
-$('#setBtn').onclick = () => \{ admTab = 'logs'; $('#adm').showModal(); renderAdm(); \};\
-document.addEventListener('visibilitychange', () => \{ if(!document.hidden && user && GAS_URL && !$('#dlg').open) load(); \});\
-document.addEventListener('keydown', e => \{ if(e.key==='/' && user && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))\{ e.preventDefault(); $('#q').focus(); \} \});\
-window.addEventListener('hashchange', () => \{ const h=location.hash.slice(1); if(h in MODES && h!==mode)\{ mode=h; selEvent=null; paintChrome(); render(); \} \});\
-\
-/* ---------- \uc0\u20449 \u31665 \u39511 \u35657  ---------- */\
-const SPECIAL = ['sam','bogi','lynn','pot','amy','bill.h','abby','maimai','suyu.c'];\
-function checkEmail(raw)\{\
-  const e = raw.trim().toLowerCase(), m = e.match(/^([^@\\s]+)@swag\\.live$/);\
-  if(!m) return '\uc0\u35531 \u22635 \u23531 \u20844 \u21496 \u20449 \u31665 \u65288 @swag.live\u65289 \u65292 \u20363 \u22914  fin.chang@swag.live';\
-  const l = m[1];\
-  if(SPECIAL.includes(l)) return '';\
-  if(/^\\d+$/.test(l)) return '\uc0\u35531 \u22635 \u23531 \u20844 \u21496 \u20449 \u31665 \u65306 \u24115 \u34399 \u19981 \u21487 \u28858 \u32020 \u25976 \u23383 ';\
-  const p = l.split('.');\
-  if(p.length !== 2 || !p.every(s => /^[a-z]\{2,\}$/.test(s))) return '\uc0\u35531 \u22635 \u23531 \u20844 \u21496 \u20449 \u31665 \u65306 \u26684 \u24335 \u28858 \u12300 \u33521 \u25991 \u21517 .\u22995 \u27663 \u25340 \u38899 @swag.live\u12301 ';\
-  if(p.some(s => /^(.)\\1+$/.test(s) || /(.)\\1\{2,\}/.test(s))) return '\uc0\u35531 \u22635 \u23531 \u20844 \u21496 \u20449 \u31665 \u65306 \u24115 \u34399 \u30475 \u36215 \u20358 \u19981 \u26159 \u30495 \u23526 \u22995 \u21517 ';\
-  return '';\
-\}\
-function initGate()\{\
-  const g = $('#gate'), inp = $('#gEmail'), err = $('#gErr');\
-  document.body.classList.add('locked');\
-  inp.value = ls.get('dict_email', ''); inp.focus();\
-  $('#gateForm').onsubmit = e => \{\
-    e.preventDefault();\
-    const msg = checkEmail(inp.value);\
-    if(msg)\{ err.textContent = msg; inp.focus(); return; \}\
-    user = inp.value.trim().toLowerCase(); ls.set('dict_email', user);\
-    err.textContent = ''; g.classList.add('out'); document.body.classList.remove('locked');\
-    setTimeout(() => g.hidden = true, 600);\
-    $('#setBtn').hidden = !isAdmin();\
-    load().then(() => logRaw('\uc0\u30331 \u20837 '));\
-  \};\
-  inp.addEventListener('input', () => err.textContent = '');\
-\}\
-paintChrome(); render(); initGate();\
-</script>\
-</body>\
-</html>}
+<div class="shell">
+  <div class="blob" aria-hidden="true"></div>
+  <header>
+    <div class="logo">CS客服部門通用詞典</div>
+    <nav role="tablist" id="nav"></nav>
+    <button class="icon" id="setBtn" title="後台" aria-label="後台" hidden>⚙</button>
+  </header>
+  <main>
+    <section class="hero">
+      <h1 id="title"></h1>
+      <p class="sub" id="desc"></p>
+      <div class="search"><input id="q" type="search" autocomplete="off" aria-label="搜尋"><span id="cnt" style="font-size:12px;color:var(--mute);padding-right:12px"></span></div>
+      <button class="btn" id="addBtn"></button>
+      <div class="stat"><span class="dot off" id="dot"></span><span id="stat"></span></div>
+    </section>
+    <section class="list" id="list" aria-live="polite"></section>
+  </main>
+</div>
+
+<dialog id="dlg"><form method="dialog" id="form" autocomplete="off"></form></dialog>
+<dialog id="adm">
+  <button class="xbtn" type="button" data-close aria-label="關閉">✕</button>
+  <h2>後台</h2>
+  <div class="tabs" id="admTabs"><button data-at="logs">使用紀錄</button><button data-at="data">資料總覽</button><button data-at="people">人員權限</button></div>
+  <div id="admBody"></div>
+</dialog>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* ---------- 設定（上傳前請填入 Apps Script /exec 網址） ---------- */
+const APP = 'CS客服部門通用詞典';
+const OWNER = 'fin.chang@swag.live';   // 需與 Code.gs 的 OWNER 相同
+const GAS_URL = '';                     // 留空 = 示範模式（資料只存在這台瀏覽器，也不會記錄 logs）
+const GAS_KEY = '';                     // Code.gs 有設定 KEY 才需要
+const LOG_SEARCH = true;                // 不想記錄搜尋關鍵字就改成 false
+
+const MODES = {
+  tags:    { nav:'Account Tag',    short:'模式一 TAG',     title:'帳號 TAG 辭典',      desc:'帳號上的 TAG 查詢涵義工具', ph:'請輸入單個完整的TAG', add:'新增 TAG', what:'TAG' },
+  events:  { nav:'Mixpanel Event', short:'模式二 Mixpanel', title:'Mixpanel Event 速查', desc:'輸入想查的內容，系統將為你找到適合查看的 Event Name。', ph:'例如：點擊、button、v2.user.clicked', add:'新增 Event', what:'Event' },
+  threads: { nav:'Threads',        short:'模式三 討論串',   title:'討論串捷徑',          desc:'快速查找討論串，並知道要 @ 哪位負責人', ph:'輸入主題或關鍵字，例如 VIP、廣告', add:'新增討論串', what:'討論串' }
+};
+/* 表單欄位：[key, 標籤, 類型, 範例] */
+const F = {
+  tags: [['tag','Tag Name（多個以逗號分隔）','text','fpid_phone_abuse, referral_abuse_5000'],['translation','Translation 涵義','text','套利，利用活動規則漏洞不當取得獎勵'],['related','Related 回覆話術（選填）','area','']],
+  evnew: [['event','Event Name','text','v2.user.clicked'],['info','Description 說明','text','查用戶在時間段內點了什麼'],['keywords','關鍵字（逗號分隔）','text','點, 點擊, 操作, click']],
+  evsub: [['sub','欄位名稱','text','button.id'],['info','說明','text','使用者點擊的按鈕']],
+  evfull: [['event','Event Name','text',''],['sub','欄位名稱（空白 = Event 本身）','text',''],['info','說明','text',''],['keywords','關鍵字（逗號分隔）','text','']],
+  kw: [['keywords','新增關鍵字（可多個，以逗號分隔）','text','例如：點擊, 操作']],
+  threads: [['title','標題','text','VIP 尊榮預約系統'],['platform','來源','select:slack,notion',''],['url','連結網址','text','https://swaglive.slack.com/…'],['mention','來自哪位同仁','text','@Ashley'],['keywords','關鍵字（逗號分隔）','text','廣告, 商務, MKT'],['note','內文','area','貼上討論串的內文']]
+};
+const SEED = {
+  tags:[{id:'s1',tag:'fingerprint-pro:failed, suspicious',translation:'裝置FPID重複，不得享有新手優惠、導購優惠',related:'您好，經查詢，您的帳號由於不符合購買該優惠禮包的條件，請選擇購買其他禮包，其餘使用不受影響。\n此限制並非代表您已進行違規儲值，而是系統在帳號評估過程中，基於風險控管機制，對部分帳號先行關閉儲值功能以避免後續風險。\n\n相關判斷屬於平台風控機制的一環，判斷條件與細節無法對外說明，客服端亦無法人工調整，敬請見諒。'}],
+  events:[{id:'e0',event:'v2.user.clicked',sub:'',info:'查用戶在時間段內點了什麼',keywords:'點, 點擊, 操作, click'},
+          {id:'e1',event:'v2.user.clicked',sub:'button.id',info:'使用者點擊的按鈕',keywords:''},
+          {id:'e2',event:'v2.user.clicked',sub:'Browser',info:'使用者使用的瀏覽器，如 Chrome iOS 等',keywords:''},
+          {id:'e3',event:'v2.user.clicked',sub:'Device',info:'使用者使用的裝置，如 iPhone / Android 等',keywords:''},
+          {id:'e4',event:'v2.user.clicked',sub:'metadata.flavor',info:'使用者使用的瀏覽器，如 swag.live / pwa 等',keywords:''}],
+  threads:[{id:'s5',title:'廣告與商務合作表單異常',keywords:'廣告, 商務, MKT, 業務合作',platform:'slack',url:'https://swaglive.slack.com/archives/C9VQKQ8TW/p1795581437725569?thread_ts=1795066187.053669&cid=C9VQKQ8TW',mention:'@Christine Lin',
+    note:'SWAG 廣告與商務合作頁面上線囉！\n  https://swag.live/business\n原本 footer 分成「廣告」和「業務合作」兩個信箱入口，現在合併成一個「廣告與商務合作」頁面，可以看到：\n • 站內廣告版位（Banner、直播間置頂公告連結等）\n • 品牌／異業合作、創作者內容媒合\n • 線上需求表單，填完會直接進到 MKT 的追蹤表\n 之後大家收到品牌、廠商、供應商的合作詢問，直接分享這個連結請對方填單，我會負責後續聯繫～\n有任何問題或發現頁面 bug 都歡迎找我！\n特別感謝 [@Kenny Hung](https://swaglive.slack.com/team/U0AN3CQV7G8) [@Home Liu](https://swaglive.slack.com/team/U0AHPVB96QK) [@Nick Kuo](https://swaglive.slack.com/team/U08LGFEL717) [@Zooey](https://swaglive.slack.com/team/U0531HBQPD5) 協助，讓頁面順利上線'}]
+};
+
+/* ---------- 狀態與工具 ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ls = { get:(k,d)=>{try{return localStorage.getItem(k)??d}catch{return d}}, set:(k,v)=>{try{localStorage.setItem(k,v)}catch{}} };
+const split = s => String(s||'').split(/[,，]/).map(x=>x.trim()).filter(Boolean);
+let mode = (location.hash.slice(1) in MODES) ? location.hash.slice(1) : 'tags';
+let data = JSON.parse(ls.get('dict_local2', 'null') || 'null') || JSON.parse(JSON.stringify(SEED));
+data.admins ||= []; data.recent ||= [];
+let online = false, user = '', selEvent = null;
+const saveLocal = () => ls.set('dict_local2', JSON.stringify(data));
+const role = () => user === OWNER ? 'owner' : ((data.admins.find(a => (a.email||'').toLowerCase() === user) || {}).role || '');
+const isAdmin = () => !!role();
+
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),1800)}
+async function copy(text, msg='已複製'){try{await navigator.clipboard.writeText(text);toast(msg)}catch{toast('複製失敗，請手動選取')}}
+function rich(s){ // 內文：換行保留，[文字](網址) 與網址轉成連結
+  return String(s||'').split(/(\[[^\]]+\]\(https?:\/\/[^)\s]+\)|https?:\/\/[^\s<>)\]]+)/g).map(p=>{
+    let m = p.match(/^\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)$/);
+    if(m) return `<a href="${esc(m[2])}" target="_blank" rel="noopener">${esc(m[1])}</a>`;
+    if(/^https?:\/\//.test(p)) return `<a href="${esc(p)}" target="_blank" rel="noopener">${esc(p)}</a>`;
+    return esc(p);
+  }).join('');
+}
+
+/* ---------- 後端 ---------- */
+async function api(op, extra={}){
+  if(!GAS_URL) throw new Error('尚未設定後端網址（GAS_URL）');
+  const r = await fetch(GAS_URL, { method:'POST', headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify({op, email:user, key:GAS_KEY, ...extra}) });
+  const j = await r.json(); if(!j.ok) throw new Error(j.error); return j;
+}
+async function load(){
+  if(!GAS_URL){ online=false; afterLoad(); return; }
+  try{
+    const r = await fetch(GAS_URL + '?key=' + encodeURIComponent(GAS_KEY) + '&t=' + Date.now());
+    const j = await r.json(); if(!j.ok) throw new Error(j.error);
+    data = { tags:j.tags, events:j.events, threads:j.threads, admins:j.admins||[], recent:j.recent||[] }; online = true; saveLocal();
+  }catch(e){ online=false; toast('無法連線 Sheet，顯示上次的快取'); }
+  afterLoad();
+}
+function afterLoad(){ $('#setBtn').hidden = !(user && isAdmin()); render(); if($('#adm').open) renderAdm(); }
+async function write(op, sheet, row){
+  if(!GAS_URL){
+    const arr = data[sheet]; row.updated = new Date().toISOString();
+    if(op==='add'){ row.id='l'+Date.now()+Math.floor(Math.random()*99); arr.push(row); }
+    else{ const i=arr.findIndex(x=>x.id===row.id); if(i>-1){ op==='delete' ? arr.splice(i,1) : arr[i]=row; } }
+    saveLocal(); afterLoad(); return true;
+  }
+  try{ await api(op, {sheet, row}); await load(); return true; }
+  catch(e){ toast('寫入失敗：' + e.message); return false; }
+}
+function logRaw(action){
+  if(!GAS_URL || !user) return;
+  fetch(GAS_URL, { method:'POST', keepalive:true, headers:{'Content-Type':'text/plain;charset=utf-8'}, body:JSON.stringify({op:'log', email:user, action, key:GAS_KEY}) }).catch(()=>{});
+}
+const logS = (m, act, detail) => act && logRaw([MODES[m].short, act, detail].filter(Boolean).join('｜'));
+const logAct = (act, detail) => logS(mode, act, detail);
+
+/* ---------- 搜尋 ---------- */
+const hay = o => Object.values(o).join(' ').toLowerCase();
+const match = (row, q) => q.toLowerCase().split(/\s+/).filter(Boolean).every(t => hay(row).includes(t));
+function evGroups(){
+  const g = {};
+  (data.events||[]).forEach(r => { const o = g[r.event] ||= {name:r.event, head:null, subs:[]}; if(r.sub) o.subs.push(r); else o.head ||= r; });
+  return g;
+}
+const evHay = g => [g.name, g.head?.keywords, g.head?.info, ...g.subs.map(s=>s.sub+' '+s.info)].join(' ').toLowerCase();
+const erow = g => `<button class="erow" data-ev="${esc(g.name)}"><b>${esc(g.name)}</b> ｜ ${esc(g.head?.info||'')}</button>`;
+const notFound = what => `<div class="empty">詞典中暫無此內容，點<button class="linkbtn" data-new>＋新增 ${what}</button>嗎？</div>`;
+
+/* ---------- 畫面 ---------- */
+function paintChrome(){
+  const m = MODES[mode];
+  $('#nav').innerHTML = Object.entries(MODES).map(([k,v])=>`<button role="tab" data-m="${k}" aria-selected="${k===mode}">${v.nav}</button>`).join('');
+  $('#title').textContent = m.title; $('#desc').textContent = m.desc;
+  $('#q').placeholder = m.ph; $('#addBtn').textContent = '＋ ' + m.add;
+}
+function render(){
+  $('#dot').className = 'dot' + (online ? '' : ' off');
+  $('#stat').textContent = online ? 'Google Sheet 已連線' : (GAS_URL ? '離線，顯示快取' : '示範模式（資料只存在這台瀏覽器）');
+  const q = $('#q').value.trim(), el = $('#list'); let html = '', n = '';
+  if(mode==='tags'){
+    const toks = q.toLowerCase().split(/[,，\s]+/).filter(Boolean);
+    const r = q ? data.tags.filter(x => split(x.tag).some(t => toks.includes(t.toLowerCase()))) : data.tags;
+    if(q) n = r.length;
+    html = r.map(x=>`<article class="card">
+      <div class="chips">${split(x.tag).map(t=>`<button class="chip" data-copy="${esc(t)}" data-act="複製TAG" data-ref="${esc(t)}" title="複製 TAG">${esc(t)}</button>`).join('')}</div>
+      <p class="mean">${esc(x.translation)}</p>
+      ${x.related?`<div class="reply">${esc(x.related)}</div>`:''}
+      <div class="row">${x.related?`<button class="mini go" data-copy="${esc(x.related)}" data-msg="已複製回覆話術" data-act="複製回覆話術" data-ref="${esc(x.tag)}">複製回覆話術</button>`:''}<button class="mini sp" data-edit="${x.id}">編輯</button></div></article>`).join('');
+    if(q && !r.length) html = notFound('TAG');
+  }else if(mode==='events'){
+    const g = evGroups();
+    if(selEvent && g[selEvent]){
+      const o = g[selEvent];
+      html = `<div class="row" style="margin:0"><button class="mini" data-back>← 返回列表</button></div>
+      <article class="paper">
+        <h2 data-copy="${esc(o.name)}" data-act="複製Event名稱" data-ref="${esc(o.name)}" title="點擊複製">${esc(o.name)}</h2>
+        <div class="kw"><span>${esc(split(o.head?.keywords).join(', ') || '尚無關鍵字')}</span><button class="mini sm" data-addkw="${esc(o.name)}">＋新增關鍵字</button></div>
+        <hr>
+        ${o.subs.map(s=>`<div class="line"><button class="k" data-copy="${esc(s.sub)}" data-act="複製欄位" data-ref="${esc(o.name)} / ${esc(s.sub)}">${esc(s.sub)}</button>｜${esc(s.info)}</div>`).join('') || '<div class="line">尚無欄位資訊</div>'}
+        <div class="row"><button class="mini go" data-addsub="${esc(o.name)}">＋新增欄位</button></div>
+      </article>`;
+    }else if(!q){
+      const seen = new Set(), names = [];
+      [...(data.recent||[]), ...Object.values(g).sort((a,b)=>(b.head?.updated||'').localeCompare(a.head?.updated||'')).map(x=>x.name)]
+        .forEach(x => { if(g[x] && !seen.has(x) && names.length<8){ seen.add(x); names.push(x); } });
+      html = names.length ? `<p class="note" style="margin:0">最近被查看的 Event</p>` + names.map(x=>erow(g[x])).join('') : '<div class="empty">還沒有 Event，按左側「新增 Event」建立第一筆。</div>';
+    }else{
+      const ql = q.toLowerCase(), toks = ql.split(/\s+/).filter(Boolean);
+      const r = Object.values(g).filter(o => toks.every(t => evHay(o).includes(t)))
+        .sort((a,b) => (b.name.toLowerCase().includes(ql)) - (a.name.toLowerCase().includes(ql)));
+      n = r.length; html = r.length ? r.map(erow).join('') : notFound('Event');
+    }
+  }else{
+    const all = data.threads || [];
+    const r = q ? all.filter(x => match(x,q)) : [...all].reverse().slice(0,8);
+    if(q) n = r.length;
+    html = r.map(x=>`<article class="card">
+      <h3>${esc(x.title)}</h3>
+      <div class="chips" style="margin:10px 0 8px"><span class="chip plain">${esc(x.platform||'')}</span>${split(x.mention).map(t=>`<button class="chip" data-copy="${esc(t)}" data-act="複製@對象" data-ref="${esc(x.title)} → ${esc(t)}" title="複製 @ 名稱">${esc(t)}</button>`).join('')}</div>
+      <div class="kwline"><i>${esc(split(x.keywords).join(', ') || '尚無關鍵字')}</i><button class="mini sm" data-addkwth="${x.id}">＋新增關鍵字</button></div>
+      ${x.note?`<div class="bodywrap"><div class="body">${rich(x.note)}</div><button class="arrow" hidden data-toggle aria-label="展開或收合">▾</button></div>`:''}
+      <div class="row">${x.url?`<button class="mini go" data-copy="${esc(x.url)}" data-msg="已複製連結" data-act="複製連結" data-ref="${esc(x.title)}">複製連結</button>`:'<span class="note" style="margin:0">尚未填連結</span>'}<button class="mini sp" data-edit="${x.id}">編輯</button></div></article>`).join('');
+    if(q && !r.length) html = notFound('討論串');
+    if(!q && !r.length) html = '<div class="empty">還沒有討論串，按左側「新增討論串」建立第一筆。</div>';
+  }
+  $('#cnt').textContent = n;
+  el.innerHTML = html;
+  requestAnimationFrame(() => document.querySelectorAll('.body').forEach(b => { const a = b.parentElement.querySelector('.arrow'); if(a) a.hidden = !(b.scrollHeight > b.clientHeight + 2); }));
+}
+
+/* ---------- 通用表單（右上角 X、儲存、取消） ---------- */
+function form({title, cols, v={}, onSave, onDelete}){
+  $('#form').innerHTML = `<button class="xbtn" type="button" data-close aria-label="關閉">✕</button><h2>${esc(title)}</h2>` + cols.map(([k,l,t,ph])=>{
+    const id='f_'+k;
+    if(t==='area') return `<label for="${id}">${l}</label><textarea class="f" id="${id}" name="${k}" placeholder="${esc(ph)}">${esc(v[k])}</textarea>`;
+    if(t.startsWith('select')) return `<label for="${id}">${l}</label><select class="f" id="${id}" name="${k}">${t.split(':')[1].split(',').map(o=>`<option ${v[k]===o?'selected':''}>${o}</option>`).join('')}</select>`;
+    return `<label for="${id}">${l}</label><input class="f" id="${id}" name="${k}" value="${esc(v[k])}" placeholder="${esc(ph)}">`;
+  }).join('') + `<div class="acts"><button class="btn" value="ok">儲存</button><button class="btn ghost" value="cancel" formnovalidate>取消</button>${onDelete?'<button class="btn danger sp" type="button" id="delBtn">刪除</button>':''}</div>`;
+  const d = $('#dlg'); d.showModal();
+  $('#form').onsubmit = async e => {
+    if(e.submitter?.value !== 'ok') return;
+    const fd = new FormData($('#form')), out = {};
+    cols.forEach(([k]) => out[k] = (fd.get(k)||'').trim());
+    if(!out[cols[0][0]]){ e.preventDefault(); toast('請填寫「' + cols[0][1].split('（')[0] + '」'); return; }
+    await onSave(out);
+  };
+  const del = $('#delBtn');
+  if(del) del.onclick = async () => { if(confirm('確定刪除這筆資料？')){ d.close(); await onDelete(); } };
+}
+const rowName = (sheet, r) => sheet==='tags' ? r.tag : sheet==='events' ? r.event + (r.sub ? ' / ' + r.sub : '') : r.title;
+function openEdit(sheet, id){
+  const row = data[sheet].find(x => x.id === id); if(!row) return;
+  const cols = sheet==='tags' ? F.tags : sheet==='events' ? F.evfull : F.threads;
+  form({ title:'編輯｜' + MODES[sheet].nav, cols, v:row,
+    onSave: async o => { if(await write('update', sheet, {...row, ...o})){ toast('已儲存'); logS(sheet, '編輯', rowName(sheet, o)); } },
+    onDelete: isAdmin() ? async () => { if(await write('delete', sheet, row)){ toast('已刪除'); logS(sheet, '刪除', rowName(sheet, row)); } } : null });
+}
+function openNew(q=''){
+  if(mode==='tags') form({ title:'新增 TAG', cols:F.tags, v:{tag:q}, onSave: async o => { if(await write('add','tags',o)){ toast('已儲存'); logS('tags','新增',o.tag); } } });
+  else if(mode==='events') form({ title:'新增 Event', cols:F.evnew, v:/\./.test(q)?{event:q}:{keywords:q}, onSave: async o => {
+    if(evGroups()[o.event]){ toast('這個 Event 已存在'); selEvent=o.event; render(); return; }
+    if(await write('add','events',{event:o.event, sub:'', info:o.info, keywords:o.keywords})){ toast('已儲存'); logS('events','新增',o.event); selEvent=o.event; $('#q').value=''; render(); } } });
+  else form({ title:'新增討論串', cols:F.threads, v:{keywords:q}, onSave: async o => { if(await write('add','threads',o)){ toast('已儲存'); logS('threads','新增',o.title); } } });
+}
+const mergeKw = (a, b) => [...new Set([...split(a), ...split(b)])].join(', ');
+function addKwEvent(name){
+  const head = evGroups()[name]?.head;
+  form({ title:'新增關鍵字｜' + name, cols:F.kw, onSave: async o => {
+    const ok = head ? await write('update','events',{...head, keywords:mergeKw(head.keywords,o.keywords)}) : await write('add','events',{event:name, sub:'', info:'', keywords:o.keywords});
+    if(ok){ toast('已新增關鍵字'); logS('events','新增關鍵字',name); } } });
+}
+function addKwThread(id){
+  const row = data.threads.find(x=>x.id===id); if(!row) return;
+  form({ title:'新增關鍵字｜' + row.title, cols:F.kw, onSave: async o => {
+    if(await write('update','threads',{...row, keywords:mergeKw(row.keywords,o.keywords)})){ toast('已新增關鍵字'); logS('threads','新增關鍵字',row.title); } } });
+}
+function addSub(name){
+  form({ title:'新增欄位｜' + name, cols:F.evsub, onSave: async o => {
+    if(await write('add','events',{event:name, sub:o.sub, info:o.info, keywords:''})){ toast('已新增欄位'); logS('events','新增欄位',name + ' / ' + o.sub); } } });
+}
+function openEvent(name){
+  selEvent = name; logS('events','查看Event',name);
+  data.recent = [name, ...(data.recent||[]).filter(x=>x!==name)].slice(0,8); saveLocal(); render();
+}
+
+/* ---------- 後台 ---------- */
+let admTab = 'logs', admSheet = 'tags', admLogs = [];
+const ROLE = { owner:'擁有者（可管理人員）', admin:'管理員（可看後台）' };
+async function renderAdm(){
+  document.querySelectorAll('#admTabs button').forEach(x => x.setAttribute('aria-selected', x.dataset.at === admTab));
+  const b = $('#admBody');
+  if(admTab === 'logs'){
+    b.innerHTML = '<p class="note">載入中…</p>';
+    try{ admLogs = (await api('logs')).logs; }catch(e){ b.innerHTML = `<p class="note">${esc(e.message)}</p>`; return; }
+    b.innerHTML = `<div class="bar"><input class="f" id="admQ" placeholder="篩選信箱、時間或動作"><button class="mini" data-refresh>重新載入</button></div><div class="tblwrap" id="admTbl"></div>`;
+  }else if(admTab === 'data'){
+    b.innerHTML = `<div class="bar"><select class="f" id="admSheet" style="max-width:200px">${Object.entries(MODES).map(([k,v])=>`<option value="${k}" ${k===admSheet?'selected':''}>${v.nav}</option>`).join('')}</select><input class="f" id="admQ" placeholder="搜尋全部欄位"></div><div class="tblwrap" id="admTbl"></div>`;
+  }else{
+    const rows = [{email:OWNER, role:'owner', fixed:true}, ...data.admins.filter(a => (a.email||'').toLowerCase() !== OWNER)];
+    const own = role() === 'owner';
+    b.innerHTML = `<p class="note" style="margin:0 0 4px">擁有者可新增或移除人員；管理員可進後台查看紀錄與編輯、刪除資料。</p>
+      ${own ? `<div class="bar" style="margin-top:14px"><input class="f" id="pEmail" placeholder="公司 Email，例如 sam@swag.live"><select class="f" id="pRole" style="max-width:220px"><option value="admin">${ROLE.admin}</option><option value="owner">${ROLE.owner}</option></select><button class="mini go" data-padd>新增人員</button></div>` : ''}
+      <div class="tblwrap"><table class="tbl"><thead><tr><th>信箱</th><th>權限</th><th></th></tr></thead><tbody>${rows.map(a=>`<tr><td>${esc(a.email)}</td><td>${esc(ROLE[a.role]||a.role)}</td><td>${own && !a.fixed ? `<button class="mini" data-pdel="${esc(a.email)}">移除</button>` : ''}</td></tr>`).join('')}</tbody></table></div>`;
+    return;
+  }
+  fillTbl();
+}
+function fillTbl(){
+  const q = ($('#admQ')?.value || '').trim().toLowerCase(), t = $('#admTbl'); if(!t) return;
+  if(admTab === 'logs'){
+    const r = admLogs.filter(x => !q || (x.email+' '+x.time+' '+x.action).toLowerCase().includes(q));
+    t.innerHTML = `<table class="tbl"><thead><tr><th>信箱</th><th>時間</th><th>模式｜動作｜對象</th></tr></thead><tbody>${r.map(x=>`<tr><td>${esc(x.email)}</td><td style="white-space:nowrap">${esc(x.time)}</td><td>${esc(x.action)}</td></tr>`).join('') || '<tr><td colspan="3">沒有紀錄</td></tr>'}</tbody></table>`;
+  }else{
+    const cols = {tags:['tag','translation','related'], events:['event','sub','info','keywords'], threads:['title','platform','mention','keywords','url']}[admSheet];
+    const r = (data[admSheet]||[]).filter(x => !q || hay(x).includes(q));
+    t.innerHTML = `<table class="tbl"><thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}<th></th></tr></thead><tbody>${r.map(x=>`<tr>${cols.map(c=>`<td class="cl" title="${esc(x[c])}">${esc(x[c])}</td>`).join('')}<td><button class="mini" data-aedit="${x.id}">編輯</button></td></tr>`).join('') || `<tr><td colspan="${cols.length+1}">沒有資料</td></tr>`}</tbody></table>`;
+  }
+}
+async function adminOp(op, target, extra){
+  try{ await api(op, {target, ...extra}); await load(); toast('已更新'); logRaw(`後台｜${op==='admin_add'?'新增人員':'移除人員'}｜${target}`); }
+  catch(e){ toast('操作失敗：' + e.message); }
+}
+
+/* ---------- 事件 ---------- */
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-m],[data-copy],[data-edit],[data-ev],[data-back],[data-addsub],[data-addkw],[data-addkwth],[data-toggle],[data-new],[data-close],[data-at],[data-aedit],[data-refresh],[data-padd],[data-pdel]');
+  if(!t) return;
+  const d = t.dataset;
+  if(d.m){ mode=d.m; selEvent=null; location.hash=mode; $('#q').value=''; paintChrome(); render(); }
+  else if(d.copy !== undefined){ if(d.copy){ copy(d.copy, d.msg); logAct(d.act, d.ref); } }
+  else if(d.edit) openEdit(mode, d.edit);
+  else if(d.ev) openEvent(d.ev);
+  else if(d.back !== undefined){ selEvent=null; render(); }
+  else if(d.addsub) addSub(d.addsub);
+  else if(d.addkw) addKwEvent(d.addkw);
+  else if(d.addkwth) addKwThread(d.addkwth);
+  else if(d.toggle !== undefined){ t.previousElementSibling.classList.toggle('open'); t.classList.toggle('up'); }
+  else if(d.new !== undefined) openNew($('#q').value.trim());
+  else if(d.close !== undefined) t.closest('dialog').close();
+  else if(d.at){ admTab = d.at; renderAdm(); }
+  else if(d.aedit) openEdit(admSheet, d.aedit);
+  else if(d.refresh !== undefined) renderAdm();
+  else if(d.padd !== undefined){ const em = $('#pEmail').value.trim().toLowerCase(); const msg = checkEmail(em); if(msg){ toast(msg); return; } adminOp('admin_add', em, {role:$('#pRole').value}); }
+  else if(d.pdel){ if(confirm('確定移除 ' + d.pdel + '？')) adminOp('admin_del', d.pdel); }
+});
+document.addEventListener('input', e => { if(e.target.id === 'admQ') fillTbl(); });
+document.addEventListener('change', e => { if(e.target.id === 'admSheet'){ admSheet = e.target.value; fillTbl(); } });
+let sTimer;
+$('#q').addEventListener('input', () => { selEvent = null; render(); clearTimeout(sTimer); const v = $('#q').value.trim();
+  if(LOG_SEARCH && v.length >= 2) sTimer = setTimeout(() => logAct('搜尋', v), 1500); });
+$('#addBtn').onclick = () => openNew('');
+$('#setBtn').onclick = () => { admTab = 'logs'; $('#adm').showModal(); renderAdm(); };
+document.addEventListener('visibilitychange', () => { if(!document.hidden && user && GAS_URL && !$('#dlg').open) load(); });
+document.addEventListener('keydown', e => { if(e.key==='/' && user && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){ e.preventDefault(); $('#q').focus(); } });
+window.addEventListener('hashchange', () => { const h=location.hash.slice(1); if(h in MODES && h!==mode){ mode=h; selEvent=null; paintChrome(); render(); } });
+
+/* ---------- 信箱驗證 ---------- */
+const SPECIAL = ['sam','bogi','lynn','pot','amy','bill.h','abby','maimai','suyu.c'];
+function checkEmail(raw){
+  const e = raw.trim().toLowerCase(), m = e.match(/^([^@\s]+)@swag\.live$/);
+  if(!m) return '請填寫公司信箱（@swag.live），例如 fin.chang@swag.live';
+  const l = m[1];
+  if(SPECIAL.includes(l)) return '';
+  if(/^\d+$/.test(l)) return '請填寫公司信箱：帳號不可為純數字';
+  const p = l.split('.');
+  if(p.length !== 2 || !p.every(s => /^[a-z]{2,}$/.test(s))) return '請填寫公司信箱：格式為「英文名.姓氏拼音@swag.live」';
+  if(p.some(s => /^(.)\1+$/.test(s) || /(.)\1{2,}/.test(s))) return '請填寫公司信箱：帳號看起來不是真實姓名';
+  return '';
+}
+function initGate(){
+  const g = $('#gate'), inp = $('#gEmail'), err = $('#gErr');
+  document.body.classList.add('locked');
+  inp.value = ls.get('dict_email', ''); inp.focus();
+  $('#gateForm').onsubmit = e => {
+    e.preventDefault();
+    const msg = checkEmail(inp.value);
+    if(msg){ err.textContent = msg; inp.focus(); return; }
+    user = inp.value.trim().toLowerCase(); ls.set('dict_email', user);
+    err.textContent = ''; g.classList.add('out'); document.body.classList.remove('locked');
+    setTimeout(() => g.hidden = true, 600);
+    $('#setBtn').hidden = !isAdmin();
+    load().then(() => logRaw('登入'));
+  };
+  inp.addEventListener('input', () => err.textContent = '');
+}
+paintChrome(); render(); initGate();
+</script>
+</body>
+</html>
